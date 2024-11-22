@@ -32,4 +32,7 @@ type Server struct {
 
 	// 跨域配置
 	Cors CORS `mapstructure:"cors" json:"cors" yaml:"cors"`
+
+	// 抓包配置
+	Scan ScanConfig `mapstructure:"scan" json:"scan" yaml:"scan"`
 }

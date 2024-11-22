@@ -3,6 +3,7 @@ package main
 import (
 	_ "go.uber.org/automaxprocs"
 	"go.uber.org/zap"
+	"sync"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/core"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -35,5 +36,9 @@ func main() {
 		db, _ := global.GVA_DB.DB()
 		defer db.Close()
 	}
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go initialize.PacketHttpInit(wg)
+	wg.Wait()
 	core.RunWindowsServer()
 }

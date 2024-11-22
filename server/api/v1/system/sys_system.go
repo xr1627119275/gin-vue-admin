@@ -7,6 +7,7 @@ import (
 	systemRes "github.com/flipped-aurora/gin-vue-admin/server/model/system/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/google/gopacket/pcap"
 	"go.uber.org/zap"
 )
 
@@ -27,6 +28,19 @@ func (s *SystemApi) GetSystemConfig(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(systemRes.SysConfigResponse{Config: config}, "获取成功", c)
+}
+
+// SetHighRiskPort
+// 设置高危端口
+// @Tags      System
+// @Summary   设置高危端口
+// @Security  ApiKeyAuth
+// @Produce   application/json
+// @Success   200  {object}  response.Response{data=string}  "设置高危端口"
+// @Router    /system/setHighRiskPort [post]
+func (s *SystemApi) SetHighRiskPort(c *gin.Context) {
+
+	response.OkWithDetailed(systemRes.SysConfigResponse{}, "获取成功", c)
 }
 
 // SetSystemConfig
@@ -51,6 +65,22 @@ func (s *SystemApi) SetSystemConfig(c *gin.Context) {
 		return
 	}
 	response.OkWithMessage("设置成功", c)
+}
+
+// GetNetDrivers
+// @Tags      System
+// @Summary   获取所有网卡驱动信息
+// @Security  ApiKeyAuth
+// @Produce   application/json
+// @Success   200   {object}  response.Response{data=string}  "设置配置文件内容"
+// @Router    /system/getNetDrivers [get]
+func (s *SystemApi) GetNetDrivers(c *gin.Context) {
+	devices, err := pcap.FindAllDevs()
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+	}
+	response.OkWithDetailed(gin.H{"devices": devices}, "获取成功", c)
+
 }
 
 // ReloadSystem

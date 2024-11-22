@@ -12,6 +12,13 @@ export const getSystemConfig = () => {
   })
 }
 
+export const getNetDrivers = () => {
+  return service({
+    url: '/system/getNetDrivers',
+    method: 'get'
+  })
+}
+
 // @Tags system
 // @Summary 设置配置文件内容
 // @Security ApiKeyAuth

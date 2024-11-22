@@ -27,6 +27,7 @@ require (
 	github.com/qiniu/qmgo v1.1.8
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/shadow1ng/fscan v0.0.0-20241025084119-3dfd2e9e30c3
 	github.com/shirou/gopsutil/v3 v3.23.6
 	github.com/songzhibin97/gkit v1.2.11
 	github.com/spf13/viper v1.16.0
@@ -40,9 +41,9 @@ require (
 	go.mongodb.org/mongo-driver v1.12.1
 	go.uber.org/automaxprocs v1.5.3
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.22.0
-	golang.org/x/sync v0.6.0
-	golang.org/x/text v0.14.0
+	golang.org/x/crypto v0.28.0
+	golang.org/x/sync v0.8.0
+	golang.org/x/text v0.19.0
 	gorm.io/datatypes v1.2.1
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/driver/postgres v1.5.7
@@ -50,6 +51,29 @@ require (
 	gorm.io/gen v0.3.26
 	gorm.io/gorm v1.25.10
 	nhooyr.io/websocket v1.8.7
+)
+
+require (
+	github.com/C-Sto/goWMIExec v0.0.1-deva.0.20210704154847-b8ebd6464a06 // indirect
+	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10 // indirect
+	github.com/denisenkom/go-mssqldb v0.12.3 // indirect
+	github.com/fatih/color v1.13.0 // indirect
+	github.com/geoffgarside/ber v1.1.0 // indirect
+	github.com/google/cel-go v0.13.0 // indirect
+	github.com/hirochachacha/go-smb2 v1.1.0 // indirect
+	github.com/huin/asn1ber v0.0.0-20120622192748-af09f62e6358 // indirect
+	github.com/icodeface/tls v0.0.0-20230910023335-34df9250cd12 // indirect
+	github.com/jlaffaye/ftp v0.2.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/sijms/go-ora/v2 v2.5.29 // indirect
+	github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8 // indirect
+	github.com/stoewer/go-strcase v1.2.0 // indirect
+	github.com/tomatome/grdp v0.1.0 // indirect
+	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (
@@ -85,6 +109,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/gopacket v1.1.19
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -146,11 +171,11 @@ require (
 	go4.org v0.0.0-20200411211856-f5505b9728dd // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/image v0.15.0 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -161,3 +186,5 @@ require (
 	modernc.org/memory v1.6.0 // indirect
 	modernc.org/sqlite v1.23.0 // indirect
 )
+
+replace github.com/tomatome/grdp v0.0.0-20211231062539-be8adab7eaf3 => github.com/shadow1ng/grdp v1.0.3
