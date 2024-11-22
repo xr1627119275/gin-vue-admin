@@ -1,36 +1,44 @@
-import { login, getUserInfo, setSelfInfo } from '@/api/user'
+import { login, getUserInfo } from '@/api/user'
 import { jsonInBlacklist } from '@/api/jwt'
 import router from '@/router/index'
 import { ElLoading, ElMessage } from 'element-plus'
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouterStore } from './router'
 import cookie from 'js-cookie'
 
+import { useAppStore } from '@/pinia'
+
 export const useUserStore = defineStore('user', () => {
+  const appStore = useAppStore()
   const loadingInstance = ref(null)
 
   const userInfo = ref({
     uuid: '',
     nickName: '',
     headerImg: '',
-    authority: {},
-    sideMode: 'dark',
-    baseColor: '#fff'
+    authority: {}
   })
-  const token = ref(window.localStorage.getItem('token') || cookie.get('x-token') || '')
+  const token = ref(
+    window.localStorage.getItem('token') || cookie.get('x-token') || ''
+  )
   const setUserInfo = (val) => {
     userInfo.value = val
+    if (val.originSetting) {
+      Object.keys(appStore.config).forEach((key) => {
+        appStore.config[key] = val.originSetting[key]
+      })
+    }
   }
 
   const setToken = (val) => {
     token.value = val
   }
 
-  const NeedInit = () => {
+  const NeedInit = async () => {
     token.value = ''
     window.localStorage.removeItem('token')
-    router.push({ name: 'Init', replace: true })
+    await router.push({ name: 'Init', replace: true })
   }
 
   const ResetUserInfo = (value = {}) => {
@@ -40,7 +48,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
   /* 获取用户信息*/
-  const GetUserInfo = async() => {
+  const GetUserInfo = async () => {
     const res = await getUserInfo()
     if (res.code === 0) {
       setUserInfo(res.data.userInfo)
@@ -48,10 +56,10 @@ export const useUserStore = defineStore('user', () => {
     return res
   }
   /* 登录*/
-  const LoginIn = async(loginInfo) => {
+  const LoginIn = async (loginInfo) => {
     loadingInstance.value = ElLoading.service({
       fullscreen: true,
-      text: '登录中，请稍候...',
+      text: '登录中，请稍候...'
     })
 
     const res = await login(loginInfo)
@@ -72,7 +80,7 @@ export const useUserStore = defineStore('user', () => {
     const asyncRouters = routerStore.asyncRouters
 
     // 注册到路由表里
-    asyncRouters.forEach(asyncRouter => {
+    asyncRouters.forEach((asyncRouter) => {
       router.addRoute(asyncRouter)
     })
 
@@ -94,7 +102,7 @@ export const useUserStore = defineStore('user', () => {
     return true
   }
   /* 登出*/
-  const LoginOut = async() => {
+  const LoginOut = async () => {
     const res = await jsonInBlacklist()
 
     // 登出失败
@@ -109,47 +117,20 @@ export const useUserStore = defineStore('user', () => {
     window.location.reload()
   }
   /* 清理数据 */
-  const ClearStorage = async() => {
+  const ClearStorage = async () => {
     token.value = ''
     sessionStorage.clear()
     window.localStorage.removeItem('token')
     cookie.remove('x-token')
-  }
-  /* 设置侧边栏模式*/
-  const changeSideMode = async(data) => {
-    const res = await setSelfInfo({ sideMode: data })
-    if (res.code === 0) {
-      userInfo.value.sideMode = data
-      ElMessage({
-        type: 'success',
-        message: '设置成功'
-      })
-    }
+    localStorage.removeItem('originSetting')
   }
 
-  const mode = computed(() => userInfo.value.sideMode)
-  const sideMode = computed(() => {
-    if (userInfo.value.sideMode === 'dark') {
-      return '#191a23'
-    } else if (userInfo.value.sideMode === 'light') {
-      return '#fff'
-    } else {
-      return userInfo.value.sideMode
+  watch(
+    () => token.value,
+    () => {
+      window.localStorage.setItem('token', token.value)
     }
-  })
-  const baseColor = computed(() => {
-    if (userInfo.value.sideMode === 'dark') {
-      return '#fff'
-    } else if (userInfo.value.sideMode === 'light') {
-      return '#191a23'
-    } else {
-      return userInfo.value.baseColor
-    }
-  })
-
-  watch(() => token.value, () => {
-    window.localStorage.setItem('token', token.value)
-  })
+  )
 
   return {
     userInfo,
@@ -159,11 +140,7 @@ export const useUserStore = defineStore('user', () => {
     GetUserInfo,
     LoginIn,
     LoginOut,
-    changeSideMode,
-    mode,
-    sideMode,
     setToken,
-    baseColor,
     loadingInstance,
     ClearStorage
   }
