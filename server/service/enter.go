@@ -1,7 +1,9 @@
 package service
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/service/Port"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/highPort"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/httpInfos"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/webScan"
@@ -14,4 +16,6 @@ type ServiceGroup struct {
 	ExampleServiceGroup   example.ServiceGroup
 	HttpInfosServiceGroup httpInfos.ServiceGroup
 	WebScanServiceGroup   webScan.ServiceGroup
+	PortServiceGroup      Port.ServiceGroup
+	HighPortServiceGroup  highPort.ServiceGroup
 }

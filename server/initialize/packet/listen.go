@@ -46,6 +46,7 @@ func (slf *Handle) Listen() error {
 			return nil
 		case packet := <-packetSource.Packets():
 			netLayer := packet.NetworkLayer()
+			ethernetLayer := packet.Layer(layers.LayerTypeEthernet)
 			if netLayer == nil {
 				continue
 			}
@@ -75,17 +76,19 @@ func (slf *Handle) Listen() error {
 				//}
 				continue
 			} else {
-				if !tcp.RST {
+				if tcp.FIN {
+					ethernetPacket, _ := ethernetLayer.(*layers.Ethernet)
 					ipLayer := packet.Layer(layers.LayerTypeIPv4) //解析IP层
 					if ipLayer != nil {
 						ip, _ := ipLayer.(*layers.IPv4)
-
 						//fmt.Println("IP:", ip.SrcIP, ip.DstIP, tcp.RST)
 						slf.tcpUdpEventCh <- TcpUdpEvent{
 							SrcPort: uint16(tcp.SrcPort),
 							DstPort: uint16(tcp.DstPort),
-							SrcIP4:  string(ip.SrcIP),
-							DstIP4:  string(ip.DstIP),
+							SrcIP4:  ip.SrcIP.String(),
+							DstIP4:  ip.DstIP.String(),
+							SrcMac:  ethernetPacket.SrcMAC.String(),
+							DstMac:  ethernetPacket.DstMAC.String(),
 						}
 					}
 				}

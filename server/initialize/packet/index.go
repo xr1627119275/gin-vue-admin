@@ -16,6 +16,8 @@ type (
 		DstPort uint16
 		SrcIP4  string
 		DstIP4  string
+		SrcMac  string
+		DstMac  string
 	}
 	EventFunc func(req *http.Request, resp *http.Response)
 	Handle    struct {

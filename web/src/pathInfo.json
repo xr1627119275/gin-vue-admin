@@ -17,6 +17,9 @@
   "/src/view/example/customer/customer.vue": "Customer",
   "/src/view/example/index.vue": "Example",
   "/src/view/example/upload/upload.vue": "Upload",
+  "/src/view/highPort/highRiskPortCheck/highRiskPortCheck.vue": "HighRiskPortCheck",
+  "/src/view/highPort/highRiskPortConfig/highRiskPortConfig.vue": "HighRiskPortConfig",
+  "/src/view/highPort/highRiskPortConfig/highRiskPortConfigForm.vue": "HighRiskPortConfigForm",
   "/src/view/httpInfos/httpInfos/httpInfos copy.vue": "HttpInfos",
   "/src/view/httpInfos/httpInfos/httpInfos.vue": "HttpInfos",
   "/src/view/httpInfos/httpInfos/httpInfosForm.vue": "HttpInfosForm",
@@ -70,6 +73,7 @@
   "/src/view/webScan/vulScan/vulScan.vue": "VulScan",
   "/src/view/webScan/webScan/webScan.vue": "WebScan",
   "/src/view/webScan/webScan/webScanForm.vue": "WebScanForm",
+  "/src/view/webScan/webScan/webScan_back.vue": "WebScan_back",
   "/src/plugin/announcement/form/info.vue": "InfoForm",
   "/src/plugin/announcement/view/info.vue": "Info",
   "/src/plugin/email/view/index.vue": "Email"

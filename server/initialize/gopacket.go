@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/initialize/packet"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/highPort"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system/gopacket"
 	"io"
 	"log"
@@ -60,17 +61,48 @@ func PacketHttpInit(wg *sync.WaitGroup) {
 	}
 }
 func handleTcpUdpR() {
-	//for i := range tcpUdpEventCh {
-	//	data := i.(packet.TcpUdpEvent)
-	//	fmt.Printf("%v", data)
-	//}
+	var HRPCs []highPort.HighRiskPortConfig
+	db := global.GVA_DB.Model(&highPort.HighRiskPortConfig{})
+	db.Find(&HRPCs)
+
+	for i := range tcpUdpEventCh {
+		data := i.(packet.TcpUdpEvent)
+		// 取出高危端口
+		var HRPC *highPort.HighRiskPortConfig = nil
+		for _, v := range HRPCs {
+			if uint16(*v.PortNumber) == data.DstPort {
+				HRPC = &v
+				break
+			}
+		}
+		if HRPC != nil {
+			sprintf := fmt.Sprintf("高危PORT: %d; IP: %s; 访问者: %s \n", data.DstPort, data.SrcIP4, data.DstIP4)
+			fmt.Println(sprintf)
+			// HRPC.Logs = append(HRPC.Logs, highPort.HighRiskPortLog{Info: sprintf})
+			global.GVA_DB.Save(&highPort.HighRiskPortLog{
+				Info:         sprintf,
+				PortConfig:   HRPC,
+				PortConfigId: uint16(HRPC.ID),
+				Ip:           data.DstIP4,
+				Mac:          data.DstMac,
+				FromIP:       data.SrcIP4,
+				FromMac:      data.SrcMac,
+			})
+			// global.GVA_DB.Create(&highPort.HighRiskPortLog{PortConfig: uint(HRPC.ID)})
+		}
+	}
 }
 func handleR() {
+	defer func() {
+		fmt.Println("defer run")
+	}()
 	for i := range eventCh {
 		data := i.(packet.Event)
 		var Req = data.Req
 		var Resp = data.Resp
-
+		if Resp == nil || Req == nil {
+			continue
+		}
 		req_bytes, _ := io.ReadAll(Req.Body)
 		var ReqContent = string(req_bytes)
 
