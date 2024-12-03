@@ -70,24 +70,28 @@ func handleTcpUdpR() {
 		// 取出高危端口
 		var HRPC *highPort.HighRiskPortConfig = nil
 		for _, v := range HRPCs {
-			if uint16(*v.PortNumber) == data.DstPort {
+			if uint16(*v.PortNumber) == data.SrcPort {
 				HRPC = &v
 				break
 			}
 		}
 		if HRPC != nil {
-			sprintf := fmt.Sprintf("高危PORT: %d; IP: %s; 访问者: %s \n", data.DstPort, data.SrcIP4, data.DstIP4)
+			sprintf := fmt.Sprintf("高危PORT: %d; IP: %s; 访问者: %s \n", data.SrcPort, data.SrcIP4, data.DstIP4)
 			fmt.Println(sprintf)
 			// HRPC.Logs = append(HRPC.Logs, highPort.HighRiskPortLog{Info: sprintf})
-			global.GVA_DB.Save(&highPort.HighRiskPortLog{
-				Info:         sprintf,
-				PortConfig:   HRPC,
-				PortConfigId: uint16(HRPC.ID),
-				Ip:           data.DstIP4,
-				Mac:          data.DstMac,
-				FromIP:       data.SrcIP4,
-				FromMac:      data.SrcMac,
-			})
+			var portlog = highPort.HighRiskPortLog{}
+			if global.GVA_DB.Find(&portlog, "port_config_id =? and ip = ? and from_ip = ?", HRPC.ID, data.DstIP4, data.SrcIP4).Error != nil || portlog.ID == 0 {
+				portlog = highPort.HighRiskPortLog{
+					Info:         sprintf,
+					PortConfig:   HRPC,
+					PortConfigId: uint16(HRPC.ID),
+					Ip:           data.DstIP4,
+					Mac:          data.DstMac,
+					FromIP:       data.SrcIP4,
+					FromMac:      data.SrcMac,
+				}
+			}
+			global.GVA_DB.Save(&portlog)
 			// global.GVA_DB.Create(&highPort.HighRiskPortLog{PortConfig: uint(HRPC.ID)})
 		}
 	}
@@ -142,6 +146,15 @@ func handleR() {
 			Method:     Req.Method,
 			Proto:      Req.Proto,
 		}
+
+		if strings.Contains(Req.RequestURI, "login") {
+			fmt.Println("login")
+			if Resp.StatusCode == 200 {
+				fmt.Println("login success")
+				fmt.Println(ReqContent)
+			}
+		}
+
 		global.GVA_DB.Create(&info)
 
 		//log.Printf("%v"+

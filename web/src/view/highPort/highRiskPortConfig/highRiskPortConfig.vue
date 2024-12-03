@@ -43,18 +43,42 @@
           prop="portName"
           width="120"
         />
-        <el-table-column
-          sortable
-          align="left"
-          label="风险等级"
-          prop="riskLevel"
-          width="120"
-        />
+        <!--        <el-table-column-->
+        <!--          sortable-->
+        <!--          align="left"-->
+        <!--          label="风险等级"-->
+        <!--          prop="riskLevel"-->
+        <!--          width="120"-->
+        <!--        />-->
+
         <el-table-column label="描述" prop="portDescription" width="200">
           <template #default="scope">
             {{ scope.row.portDescription }}
           </template>
         </el-table-column>
+        <el-table-column label="启用检测" prop="status" width="200">
+          <template #default="{ row }">
+            <el-switch
+              v-model="row.status"
+              :active-value="1"
+              :inactive-value="0"
+              :before-change="
+                () =>
+                  updateHighRiskPortConfig({
+                    ...row,
+                    status: Number(!row.status)
+                  })
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          sortable
+          align="left"
+          label="排序"
+          prop="order"
+          width="120"
+        />
         <el-table-column
           align="left"
           label="操作"
@@ -140,13 +164,22 @@
             placeholder="请输入端口名称"
           />
         </el-form-item>
-        <el-form-item label="风险等级:" prop="riskLevel">
+        <!--        <el-form-item label="风险等级:" prop="riskLevel">-->
+        <!--          <el-input-->
+        <!--            v-model="formData.riskLevel"-->
+        <!--            :clearable="false"-->
+        <!--            placeholder="请输入风险等级"-->
+        <!--          />-->
+        <!--        </el-form-item>-->
+
+        <el-form-item label="排序:" prop="riskLevel">
           <el-input
-            v-model="formData.riskLevel"
+            v-model="formData.order"
             :clearable="false"
-            placeholder="请输入风险等级"
+            placeholder="请输入排序"
           />
         </el-form-item>
+
         <el-form-item label="描述:" prop="portDescription">
           <el-input
             v-model="formData.portDescription"
@@ -174,9 +207,9 @@
         <el-descriptions-item label="端口名称">
           {{ detailFrom.portName }}
         </el-descriptions-item>
-        <el-descriptions-item label="风险等级">
-          {{ detailFrom.riskLevel }}
-        </el-descriptions-item>
+        <!--        <el-descriptions-item label="风险等级">-->
+        <!--          {{ detailFrom.riskLevel }}-->
+        <!--        </el-descriptions-item>-->
         <el-descriptions-item label="描述">
           {{ detailFrom.portDescription }}
         </el-descriptions-item>

@@ -12,6 +12,8 @@ type HighRiskPortConfig struct {
 	PortName        *string `json:"portName" form:"portName" gorm:"column:port_name;comment:端口名称;" binding:"required"`           //端口名称
 	RiskLevel       *string `json:"riskLevel" form:"riskLevel" gorm:"column:risk_level;comment:风险等级;" binding:"required"`        //风险等级
 	PortDescription *string `json:"portDescription" form:"portDescription" gorm:"column:port_description;comment:描述;type:text;"` //描述
+	Status          int     `json:"status" form:"status" gorm:"column:status;comment:状态;default:1"`
+	Order           string  `json:"order" form:"order" gorm:"column:order;comment:排序"`
 }
 
 // TableName 高危端口 HighRiskPortConfig自定义表名 high_risk_port_config

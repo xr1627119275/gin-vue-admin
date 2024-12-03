@@ -4,6 +4,7 @@
  -->
 <template>
   <div
+    style="display: none !important"
     class="flex flex-col md:flex-row gap-2 items-center text-sm text-slate-700 dark:text-slate-500 justify-center py-2"
   >
     <div class="text-center">

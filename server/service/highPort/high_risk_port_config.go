@@ -4,6 +4,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/highPort"
 	highPortReq "github.com/flipped-aurora/gin-vue-admin/server/model/highPort/request"
+	"gorm.io/gorm/clause"
 )
 
 type HighRiskPortConfigService struct{}
@@ -49,8 +50,16 @@ func (HRPCService *HighRiskPortConfigService) GetHighRiskPortLogsInfoList(info h
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
-	db := global.GVA_DB.Model(&highPort.HighRiskPortLog{})
+	db := global.GVA_DB.Model(&highPort.HighRiskPortLog{}).Preload("PortConfig")
 	var HRPCs []highPort.HighRiskPortLog
+	if info.PortNumber != nil && *info.PortNumber != 0 {
+		db = db.Joins("PortConfig")
+		db.Clauses(clause.Eq{
+			Column: "PortConfig.port_number",
+			Value:  info.PortNumber,
+		})
+	}
+
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
@@ -64,7 +73,7 @@ func (HRPCService *HighRiskPortConfigService) GetHighRiskPortLogsInfoList(info h
 		db = db.Limit(limit).Offset(offset)
 	}
 
-	err = db.Preload("PortConfig").Find(&HRPCs).Error
+	err = db.Find(&HRPCs).Error
 	return HRPCs, total, err
 }
 
@@ -80,6 +89,9 @@ func (HRPCService *HighRiskPortConfigService) GetHighRiskPortConfigInfoList(info
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+	if info.Status != nil {
+		db = db.Where("status = ?", info.Status)
+	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -88,12 +100,15 @@ func (HRPCService *HighRiskPortConfigService) GetHighRiskPortConfigInfoList(info
 	orderMap := make(map[string]bool)
 	orderMap["port_number"] = true
 	orderMap["risk_level"] = true
+	orderMap["order"] = true
 	if orderMap[info.Sort] {
-		OrderStr = info.Sort
+		OrderStr = "`" + info.Sort + "`"
 		if info.Order == "descending" {
 			OrderStr = OrderStr + " desc"
 		}
 		db = db.Order(OrderStr)
+	} else {
+		db = db.Order("`order` desc")
 	}
 
 	if limit != 0 {

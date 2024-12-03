@@ -17,7 +17,7 @@
   "/src/view/example/customer/customer.vue": "Customer",
   "/src/view/example/index.vue": "Example",
   "/src/view/example/upload/upload.vue": "Upload",
-  "/src/view/highPort/highRiskPortCheck/highRiskPortCheck.vue": "HighRiskPortCheck",
+  "/src/view/highPort/highRiskPortCheck/highRiskPortCheck.vue": "HighRiskPortConfig",
   "/src/view/highPort/highRiskPortConfig/highRiskPortConfig.vue": "HighRiskPortConfig",
   "/src/view/highPort/highRiskPortConfig/highRiskPortConfigForm.vue": "HighRiskPortConfigForm",
   "/src/view/httpInfos/httpInfos/httpInfos copy.vue": "HttpInfos",

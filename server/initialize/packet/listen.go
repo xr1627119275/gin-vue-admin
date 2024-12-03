@@ -76,15 +76,17 @@ func (slf *Handle) Listen() error {
 				//}
 				continue
 			} else {
-				if tcp.FIN {
+				var data = tcp.BaseLayer.Contents[13]
+				// ack and syn
+				if data == 0x10 {
 					ethernetPacket, _ := ethernetLayer.(*layers.Ethernet)
 					ipLayer := packet.Layer(layers.LayerTypeIPv4) //解析IP层
 					if ipLayer != nil {
 						ip, _ := ipLayer.(*layers.IPv4)
 						//fmt.Println("IP:", ip.SrcIP, ip.DstIP, tcp.RST)
 						slf.tcpUdpEventCh <- TcpUdpEvent{
-							SrcPort: uint16(tcp.SrcPort),
-							DstPort: uint16(tcp.DstPort),
+							SrcPort: uint16(tcp.DstPort),
+							DstPort: uint16(tcp.SrcPort),
 							SrcIP4:  ip.SrcIP.String(),
 							DstIP4:  ip.DstIP.String(),
 							SrcMac:  ethernetPacket.SrcMAC.String(),

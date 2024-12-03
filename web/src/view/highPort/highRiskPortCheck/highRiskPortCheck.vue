@@ -2,6 +2,43 @@
   <div>
     <div class="gva-table-box">
       <div class="gva-btn-list"></div>
+      <!--      <el-tabs type="border-card" class="demo-tabs">-->
+      <!--        <el-tab-pane>-->
+      <!--          <template #label>-->
+      <!--            <span class="custom-tabs-label">-->
+      <!--              <el-badge :value="12" class="item">-->
+      <!--                <span>Route</span>-->
+      <!--              </el-badge>-->
+      <!--            </span>-->
+      <!--          </template>-->
+      <!--          Route-->
+      <!--        </el-tab-pane>-->
+      <!--        <el-tab-pane label="Config">Config</el-tab-pane>-->
+      <!--        <el-tab-pane label="Role">Role</el-tab-pane>-->
+      <!--        <el-tab-pane label="Task">Task</el-tab-pane>-->
+      <!--      </el-tabs>-->
+
+      <div class="mb-4">
+        <el-button
+          text
+          :bg="curr_port_number === 0"
+          :type="curr_port_number === 0 && 'primary'"
+          @click="curr_port_number = 0"
+        >
+          全部
+        </el-button>
+        <el-button
+          v-for="port in portsList"
+          :key="port.ID"
+          :type="curr_port_number === port.portNumber && 'primary'"
+          text
+          :bg="curr_port_number === port.portNumber"
+          @click="curr_port_number = port.portNumber"
+        >
+          {{ port.portNumber }}
+        </el-button>
+      </div>
+
       <el-table
         ref="multipleTable"
         style="width: 100%"
@@ -18,8 +55,13 @@
             formatDate(scope.row.CreatedAt)
           }}</template>
         </el-table-column>
+        <el-table-column label="最新时间" width="180">
+          <template #default="scope">{{
+            formatDate(scope.row.UpdatedAt)
+          }}</template>
+        </el-table-column>
 
-        <el-table-column label="高危端口" width="100px">
+        <el-table-column label="高危端口">
           <template #default="scope">
             <el-tag
               v-if="scope.row.PortConfig"
@@ -33,6 +75,7 @@
             <div class="flex">
               <span class="shrink-0 w-[3em]">IP:</span>{{ scope.row.Ip }}
             </div>
+            <hr />
             <div class="flex">
               <span class="shrink-0 w-[3em]">MAC:</span>{{ scope.row.Mac }}
             </div>
@@ -44,12 +87,13 @@
             <div class="flex">
               <span class="shrink-0 w-[3em]">IP:</span>{{ scope.row.FromIP }}
             </div>
+            <hr />
             <div class="flex">
               <span class="shrink-0 w-[3em]">MAC:</span>{{ scope.row.FromMac }}
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="记录" prop="info"> </el-table-column>
+        <!--        <el-table-column label="记录" prop="info"> </el-table-column>-->
 
         <!--        <el-table-column align="left" label="操作" fixed="right" width="240">-->
         <!--          <template #default="scope">-->
@@ -106,17 +150,33 @@
 <script setup>
   import {
     findHighRiskPortConfig,
+    getHighRiskPortConfigList,
     getHighRiskPortLogsList
   } from '@/api/highPort/highRiskPortConfig'
 
   // 全量引入格式化工具 请按需保留
   import { formatDate } from '@/utils/format'
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
 
   defineOptions({
     name: 'HighRiskPortConfig'
   })
-
+  const portsList = ref([])
+  const curr_port_number = ref(0)
+  function findPorts() {
+    getHighRiskPortConfigList({
+      page: 1,
+      pageSize: 1000,
+      status: 1
+    }).then((res) => {
+      portsList.value = res.data.list
+    })
+  }
+  findPorts()
+  watch(curr_port_number, () => {
+    searchInfo.value['portNumber'] = curr_port_number.value
+    getTableData()
+  })
   // =========== 表格控制部分 ===========
   const page = ref(1)
   const total = ref(0)
