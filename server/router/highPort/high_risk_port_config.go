@@ -25,5 +25,6 @@ func (s *HighRiskPortConfigRouter) InitHighRiskPortConfigRouter(Router *gin.Rout
 	}
 	{
 		HRPCRouterWithoutAuth.GET("getHighRiskPortConfigPublic", HRPCApi.GetHighRiskPortConfigPublic) // 高危端口开放接口
+		HRPCRouterWithoutAuth.GET("ws", HRPCApi.GetPushNews)
 	}
 }

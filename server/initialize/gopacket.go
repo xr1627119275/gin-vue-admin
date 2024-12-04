@@ -3,6 +3,7 @@ package initialize
 import (
 	"context"
 	"fmt"
+	httpHighPort "github.com/flipped-aurora/gin-vue-admin/server/api/v1/highPort"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/initialize/packet"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/highPort"
@@ -77,6 +78,10 @@ func handleTcpUdpR() {
 		}
 		if HRPC != nil {
 			sprintf := fmt.Sprintf("高危PORT: %d; IP: %s; 访问者: %s \n", data.SrcPort, data.SrcIP4, data.DstIP4)
+
+			for _, message := range httpHighPort.HighLogMessage {
+				message <- sprintf
+			}
 			fmt.Println(sprintf)
 			// HRPC.Logs = append(HRPC.Logs, highPort.HighRiskPortLog{Info: sprintf})
 			var portlog = highPort.HighRiskPortLog{}
