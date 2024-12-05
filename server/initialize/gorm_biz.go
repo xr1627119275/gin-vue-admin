@@ -9,7 +9,7 @@ import (
 
 func bizModel() error {
 	db := global.GVA_DB
-	err := db.AutoMigrate(httpInfos.HttpInfos{}, webScan.WebScan{}, highPort.HighRiskPortConfig{}, highPort.HighRiskPortLog{})
+	err := db.AutoMigrate(httpInfos.HttpInfos{}, webScan.WebScan{}, highPort.HighRiskPortConfig{}, highPort.HighRiskPortLog{}, highPort.HighRiskPortScan{})
 	if err != nil {
 		return err
 	}

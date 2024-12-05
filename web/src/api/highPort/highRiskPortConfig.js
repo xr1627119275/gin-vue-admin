@@ -116,3 +116,19 @@ export const getHighRiskPortConfigPublic = () => {
     method: 'get'
   })
 }
+
+export const portScan = (data) => {
+  return service({
+    url: '/HRPC/portScan',
+    method: 'post',
+    data
+  })
+}
+
+export const getPortScan = (params) => {
+  return service({
+    url: '/HRPC/getPortScan',
+    method: 'get',
+    params
+  })
+}

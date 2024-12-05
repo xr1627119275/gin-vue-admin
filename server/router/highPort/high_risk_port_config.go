@@ -19,12 +19,15 @@ func (s *HighRiskPortConfigRouter) InitHighRiskPortConfigRouter(Router *gin.Rout
 		HRPCRouter.PUT("updateHighRiskPortConfig", HRPCApi.UpdateHighRiskPortConfig)              // 更新高危端口
 	}
 	{
+		HRPCRouterWithoutRecord.POST("portScan", HRPCApi.PortScan)      // 获取扫描结果
+		HRPCRouterWithoutRecord.GET("getPortScan", HRPCApi.GetPortScan) // 获取高危端口日志列表
+
 		HRPCRouterWithoutRecord.GET("findHighRiskPortConfig", HRPCApi.FindHighRiskPortConfig)       // 根据ID获取高危端口
 		HRPCRouterWithoutRecord.GET("getHighRiskPortConfigList", HRPCApi.GetHighRiskPortConfigList) // 获取高危端口列表
 		HRPCRouterWithoutRecord.GET("getHighRiskPortLogsList", HRPCApi.GetHighRiskPortLogsList)     // 获取高危端口日志列表
+
 	}
 	{
 		HRPCRouterWithoutAuth.GET("getHighRiskPortConfigPublic", HRPCApi.GetHighRiskPortConfigPublic) // 高危端口开放接口
-		HRPCRouterWithoutAuth.GET("ws", HRPCApi.GetPushNews)
 	}
 }

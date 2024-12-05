@@ -14,3 +14,8 @@ type HighRiskPortConfigSearch struct {
 	Status     *int   `json:"status" form:"status"`
 	PortNumber *int   `json:"portNumber" form:"portNumber"`
 }
+
+type PortScanSearch struct {
+	Target string `json:"target" form:"target"`
+	Port   string `json:"port" form:"port"`
+}

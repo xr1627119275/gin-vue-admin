@@ -41,6 +41,10 @@ export const getDictFunc = async (type) => {
 
 const path =
   import.meta.env.VITE_BASE_PATH + ':' + import.meta.env.VITE_SERVER_PORT + '/'
+
+export const WsPath =
+  (location.protocol === 'https:' ? 'wss' : 'ws') +
+  path.replace('https', '').replace('http', '')
 export const ReturnArrImg = (arr) => {
   const imgArr = []
   if (arr instanceof Array) {

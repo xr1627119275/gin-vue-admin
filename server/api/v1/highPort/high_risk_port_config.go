@@ -189,10 +189,34 @@ func (HRPCApi *HighRiskPortConfigApi) GetHighRiskPortLogsList(c *gin.Context) {
 // @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
 // @Router /HRPC/getHighRiskPortConfigPublic [get]
 func (HRPCApi *HighRiskPortConfigApi) GetHighRiskPortConfigPublic(c *gin.Context) {
-	// 此接口不需要鉴权
-	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
 	HRPCService.GetHighRiskPortConfigPublic()
 	response.OkWithDetailed(gin.H{
 		"info": "不需要鉴权的高危端口接口信息",
 	}, "获取成功", c)
+}
+
+func (HRPCApi *HighRiskPortConfigApi) PortScan(c *gin.Context) {
+	var portSearch highPortReq.PortScanSearch
+	err := c.ShouldBindJSON(&portSearch)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err, scanInfo := HRPCService.PortScan(portSearch)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(scanInfo, "获取成功", c)
+}
+
+func (HRPCApi *HighRiskPortConfigApi) GetPortScan(c *gin.Context) {
+	id := c.Query("id")
+	data, err := HRPCService.GetPortScan(id)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(data, "获取成功", c)
 }

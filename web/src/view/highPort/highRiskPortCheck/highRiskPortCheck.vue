@@ -56,7 +56,9 @@
           }}</template>
         </el-table-column>
         <el-table-column label="最新时间" width="180">
-          <template #default="scope">{{ formatRelativeTime(scope.row.UpdatedAt) }}</template>
+          <template #default="scope">{{
+            formatRelativeTime(scope.row.UpdatedAt)
+          }}</template>
         </el-table-column>
 
         <el-table-column label="高危端口">
@@ -153,7 +155,7 @@
   } from '@/api/highPort/highRiskPortConfig'
 
   // 全量引入格式化工具 请按需保留
-  import { formatDate } from '@/utils/format'
+  import { formatDate, WsPath } from '@/utils/format'
   import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
   defineOptions({
@@ -164,7 +166,7 @@
   const logs = ref([]) // 用于存储高危端口日志
 
   const connectWebSocket = () => {
-    ws.value = new WebSocket('ws://127.0.0.1:8888/HRPC/ws?userId=123') // 替换为你的WebSocket地址
+    ws.value = new WebSocket(WsPath + 'system_ws/?messageId=livePortLog') // 替换为你的WebSocket地址
     ws.value.onopen = () => {
       console.log('WebSocket connected')
     }
@@ -305,23 +307,23 @@
   }
 
   const formatRelativeTime = (dateString) => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const seconds = Math.floor((now - date) / 1000);
-    
-    if (seconds === 0) return '当前在线'; // Change for 0 seconds
+    const now = new Date()
+    const date = new Date(dateString)
+    const seconds = Math.floor((now - date) / 1000)
 
-    let interval = Math.floor(seconds / 31536000);
-    if (interval > 1) return `${interval}年之前`;
-    interval = Math.floor(seconds / 2592000);
-    if (interval > 1) return `${interval}个月之前`;
-    interval = Math.floor(seconds / 86400);
-    if (interval > 1) return `${interval}天之前`;
-    interval = Math.floor(seconds / 3600);
-    if (interval > 1) return `${interval}小时之前`;
-    interval = Math.floor(seconds / 60);
-    if (interval > 1) return `${interval}分钟之前`;
-    return `${seconds}秒之前`;
+    if (seconds === 0) return '当前在线' // Change for 0 seconds
+
+    let interval = Math.floor(seconds / 31536000)
+    if (interval > 1) return `${interval}年之前`
+    interval = Math.floor(seconds / 2592000)
+    if (interval > 1) return `${interval}个月之前`
+    interval = Math.floor(seconds / 86400)
+    if (interval > 1) return `${interval}天之前`
+    interval = Math.floor(seconds / 3600)
+    if (interval > 1) return `${interval}小时之前`
+    interval = Math.floor(seconds / 60)
+    if (interval > 1) return `${interval}分钟之前`
+    return `${seconds}秒之前`
   }
 </script>
 

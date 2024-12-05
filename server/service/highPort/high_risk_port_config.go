@@ -1,10 +1,17 @@
 package highPort
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/highPort"
 	highPortReq "github.com/flipped-aurora/gin-vue-admin/server/model/highPort/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"gorm.io/gorm/clause"
+	"os"
+	"os/exec"
+	"runtime"
+	"time"
 )
 
 type HighRiskPortConfigService struct{}
@@ -121,4 +128,95 @@ func (HRPCService *HighRiskPortConfigService) GetHighRiskPortConfigInfoList(info
 func (HRPCService *HighRiskPortConfigService) GetHighRiskPortConfigPublic() {
 	// 此方法为获取数据源定义的数据
 	// 请自行实现
+}
+func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortScanSearch) (err error, saveInfo highPort.HighRiskPortScan) {
+	var cmd *exec.Cmd
+	var execFileName = "kscan"
+	//var runType = ""
+	currentTime := time.Now()
+	timestamp := currentTime.Unix()
+	timestampStr := fmt.Sprintf("%d", timestamp)
+	outFileName := "scanLogs" + string(os.PathSeparator) + timestampStr + ".json"
+	// 如果scanLogs文件夹 不存在
+	if _, err := os.Stat("scanLogs"); os.IsNotExist(err) {
+		// 创建scanLogs文件夹
+		_ = os.Mkdir("scanLogs", os.ModePerm)
+	}
+	var args []string
+	if params.Target != "" {
+		args = append(args, "-t", params.Target)
+	}
+	if params.Port != "" {
+		args = append(args, "-p", params.Port)
+	}
+
+	args = append(args, "-oJ", outFileName)
+
+	// Determine the executable based on the OS
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command(fmt.Sprintf("./%s.exe", execFileName), args...)
+	} else {
+		cmd = exec.Command(fmt.Sprintf("./%s", execFileName), args...)
+	}
+
+	// Get the stdout pipe
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return
+	}
+
+	// Start the command
+	if err := cmd.Start(); err != nil {
+		return err, saveInfo
+	}
+
+	// Create a scanner to read the command's output
+	scanner := bufio.NewScanner(stdout)
+	db := global.GVA_DB.Model(&highPort.HighRiskPortScan{})
+	db.Save(&saveInfo)
+	go func() {
+		for scanner.Scan() {
+			saveInfo.Info += scanner.Text() + "\n"
+			utils.HighLogMessage[saveInfo.ID.String()] <- scanner.Text() + "\n"
+			db.Save(&saveInfo)
+		}
+
+		// Wait for the command to finish
+		if err = cmd.Wait(); err != nil {
+			return
+		}
+		// 打开文件
+		file, err := os.Open(outFileName)
+		var fileResult string
+		if err != nil {
+			return
+		}
+		defer func() {
+			file.Close()
+			os.Remove(outFileName)
+		}()
+		// 创建一个文件的缓冲区
+		buf := make([]byte, 1024)
+		for {
+			n, _ := file.Read(buf)
+			if 0 == n {
+				break
+			}
+			fileResult += string(buf[:n])
+		}
+		saveInfo.JsonResult = fileResult
+		saveInfo.Over = true
+		db.Save(&saveInfo)
+	}()
+
+	return
+	//scanInfo.JsonResult = fileResult
+	//scanInfo.ScanOver = true
+}
+
+// GetHighRiskPortConfig 根据ID获取高危端口记录
+// Author [yourname](https://github.com/yourname)
+func (HRPCService *HighRiskPortConfigService) GetPortScan(ID string) (scan highPort.HighRiskPortScan, err error) {
+	err = global.GVA_DB.Where("id = ?", ID).First(&scan).Error
+	return
 }

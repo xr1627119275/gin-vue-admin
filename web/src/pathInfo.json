@@ -20,6 +20,7 @@
   "/src/view/highPort/highRiskPortCheck/highRiskPortCheck.vue": "HighRiskPortConfig",
   "/src/view/highPort/highRiskPortConfig/highRiskPortConfig.vue": "HighRiskPortConfig",
   "/src/view/highPort/highRiskPortConfig/highRiskPortConfigForm.vue": "HighRiskPortConfigForm",
+  "/src/view/highPort/portScan/portScan.vue": "PortScan",
   "/src/view/httpInfos/httpInfos/httpInfos copy.vue": "HttpInfos",
   "/src/view/httpInfos/httpInfos/httpInfos.vue": "HttpInfos",
   "/src/view/httpInfos/httpInfos/httpInfosForm.vue": "HttpInfosForm",

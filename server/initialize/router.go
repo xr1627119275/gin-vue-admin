@@ -70,6 +70,8 @@ func Routers() *gin.Engine {
 		PublicGroup.GET("/health", func(c *gin.Context) {
 			c.JSON(http.StatusOK, "ok")
 		})
+
+		PublicGroup.GET("/system_ws", GetPushNews)
 	}
 	{
 		systemRouter.InitBaseRouter(PublicGroup) // 注册基础功能路由 不做鉴权
