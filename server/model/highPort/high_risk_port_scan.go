@@ -8,6 +8,9 @@ import (
 // 高危端口 结构体  HighRiskPortScan
 type HighRiskPortScan struct {
 	global.GVA_MODEL_UUID
+	TaskName   string `json:"task_name" gorm:"column:task_name;comment:任务名称"`
+	Target     string `json:"target" gorm:"column:target;comment:扫描目标"`
+	Port       string `json:"port" gorm:"column:port;comment:端口"`
 	Info       string `json:"info" gorm:"column:info;type:longtext"`
 	JsonResult string `json:"jsonResult" gorm:"column:json_result;type:longtext"`
 	Over       bool   `json:"over" gorm:"column:over;comment:是否扫描完成"`

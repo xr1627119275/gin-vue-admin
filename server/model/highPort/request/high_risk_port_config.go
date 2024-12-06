@@ -16,6 +16,7 @@ type HighRiskPortConfigSearch struct {
 }
 
 type PortScanSearch struct {
-	Target string `json:"target" form:"target"`
-	Port   string `json:"port" form:"port"`
+	Target   string `json:"target" form:"target"`
+	Port     string `json:"port" form:"port"`
+	TaskName string `json:"taskName" form:"taskName"`
 }

@@ -173,6 +173,9 @@ func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortSc
 	// Create a scanner to read the command's output
 	scanner := bufio.NewScanner(stdout)
 	db := global.GVA_DB.Model(&highPort.HighRiskPortScan{})
+	saveInfo.TaskName = params.TaskName
+	saveInfo.Port = params.Port
+	saveInfo.Target = params.Target
 	db.Save(&saveInfo)
 	go func() {
 		for scanner.Scan() {
@@ -192,6 +195,7 @@ func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortSc
 			return
 		}
 		defer func() {
+			utils.HighLogMessage[saveInfo.ID.String()] <- "{{over}}"
 			file.Close()
 			os.Remove(outFileName)
 		}()

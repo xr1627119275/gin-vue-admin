@@ -163,10 +163,9 @@
   })
 
   const ws = ref(null)
-  const logs = ref([]) // 用于存储高危端口日志
 
   const connectWebSocket = () => {
-    ws.value = new WebSocket(WsPath + 'system_ws/?messageId=livePortLog') // 替换为你的WebSocket地址
+    ws.value = new WebSocket(WsPath + 'system_ws?messageId=livePortLog') // 替换为你的WebSocket地址
     ws.value.onopen = () => {
       console.log('WebSocket connected')
     }
@@ -176,9 +175,6 @@
         getTableData()
       }
       console.log(event.data)
-
-      const newLogs = JSON.parse(event.data)
-      logs.value = newLogs // 更新日志列表
     }
 
     ws.value.onclose = () => {

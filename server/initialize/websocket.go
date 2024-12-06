@@ -131,7 +131,7 @@ func getClient(id string) (conn *websocket.Conn, exist bool) {
 func deleteClient(id string) {
 	mux.Lock()
 	delete(client, id)
-	log.Println(id + "websocket退出")
+	log.Println(id + " websocket退出")
 	mux.Unlock()
 }
 
