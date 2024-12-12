@@ -132,3 +132,11 @@ export const getPortScan = (params) => {
     params
   })
 }
+
+export const getPortScanList = (data) => {
+  return service({
+    url: '/HRPC/getPortScanList',
+    method: 'post',
+    data
+  })
+}

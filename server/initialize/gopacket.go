@@ -156,10 +156,11 @@ func handleR() {
 		}
 
 		if strings.Contains(Req.RequestURI, "login") {
-			fmt.Println("login")
+			fmt.Println("login", Req.RequestURI)
 			if Resp.StatusCode == 200 {
 				fmt.Println("login success")
 				fmt.Println(ReqContent)
+				fmt.Println(ResContent)
 			}
 		}
 

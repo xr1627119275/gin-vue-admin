@@ -220,3 +220,24 @@ func (HRPCApi *HighRiskPortConfigApi) GetPortScan(c *gin.Context) {
 	}
 	response.OkWithDetailed(data, "获取成功", c)
 }
+
+func (HRPCApi *HighRiskPortConfigApi) GetPortScanList(c *gin.Context) {
+	var pageInfo highPortReq.PortScanSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := HRPCService.GetPortScanList(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
+}

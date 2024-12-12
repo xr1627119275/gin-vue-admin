@@ -224,3 +224,28 @@ func (HRPCService *HighRiskPortConfigService) GetPortScan(ID string) (scan highP
 	err = global.GVA_DB.Where("id = ?", ID).First(&scan).Error
 	return
 }
+
+// GetPortScanList 分页获取端口扫描记录
+// Author [yourname](https://github.com/yourname)
+func (HRPCService *HighRiskPortConfigService) GetPortScanList(info highPortReq.PortScanSearch) (list []highPort.HighRiskPortScan, total int64, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	db := global.GVA_DB.Model(&highPort.HighRiskPortScan{})
+	var scan []highPort.HighRiskPortScan
+
+	// 如果有条件搜索 下方会自动创建搜索语句
+	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
+		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+
+	if limit != 0 {
+		db = db.Limit(limit).Offset(offset)
+	}
+
+	err = db.Find(&scan).Error
+	return scan, total, err
+}

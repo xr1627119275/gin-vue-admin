@@ -16,6 +16,9 @@ type HighRiskPortConfigSearch struct {
 }
 
 type PortScanSearch struct {
+	StartCreatedAt *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
+	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	request.PageInfo
 	Target   string `json:"target" form:"target"`
 	Port     string `json:"port" form:"port"`
 	TaskName string `json:"taskName" form:"taskName"`
