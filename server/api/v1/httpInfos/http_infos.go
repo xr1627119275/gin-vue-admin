@@ -165,3 +165,24 @@ func (httpInfoApi *HttpInfosApi) GetHttpInfosPublic(c *gin.Context) {
 		"info": "不需要鉴权的httpInfos表接口信息",
 	}, "获取成功", c)
 }
+
+func (httpInfoApi *HttpInfosApi) GetHttpWeakPassWordInfosList(c *gin.Context) {
+	var pageInfo httpInfosReq.HttpInfosSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	list, total, err := httpInfoService.GetHttpWeakPassWordInfosList(pageInfo)
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     list,
+		Total:    total,
+		Page:     pageInfo.Page,
+		PageSize: pageInfo.PageSize,
+	}, "获取成功", c)
+}

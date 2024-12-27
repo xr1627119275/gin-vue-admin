@@ -56,6 +56,9 @@ func (httpInfoService *HttpInfosService) GetHttpInfosInfoList(info httpInfosReq.
 	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
 	}
+	if info.WeakPassword {
+		db = db.Where("weak_password = ?", true)
+	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -67,4 +70,29 @@ func (httpInfoService *HttpInfosService) GetHttpInfosInfoList(info httpInfosReq.
 
 	err = db.Find(&httpInfos).Error
 	return httpInfos, total, err
+}
+
+func (httpInfoService *HttpInfosService) GetHttpWeakPassWordInfosList(info httpInfosReq.HttpInfosSearch) (list []httpInfos.HttpWeakPassword, total int64, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	// 创建db
+	db := global.GVA_DB.Model(&httpInfos.HttpWeakPassword{}).Preload("HttpInfos")
+	var httpWeakPassInfo []httpInfos.HttpWeakPassword
+	// 如果有条件搜索 下方会自动创建搜索语句
+
+	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
+		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	}
+
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+
+	if limit != 0 {
+		db = db.Limit(limit).Offset(offset).Order("created_at desc")
+	}
+
+	err = db.Find(&httpWeakPassInfo).Error
+	return httpWeakPassInfo, total, err
 }

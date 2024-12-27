@@ -1,11 +1,11 @@
 <template>
   <div id="userLayout" class="w-full h-full relative">
     <div
-      class="rounded-lg flex items-center justify-evenly w-full h-full md:w-screen md:h-screen md:bg-[#194bfb] bg-white"
+      class="bg-login-container rounded-lg flex items-center justify-evenly w-full h-full md:w-screen md:h-screen md:bg-[#194bfb] bg-white"
     >
       <div class="md:w-3/5 w-10/12 h-full flex items-center justify-evenly">
         <div
-          class="oblique h-[130%] w-3/5 bg-white dark:bg-slate-900 transform -rotate-12 absolute -ml-52"
+          class="oblique h-[130%] w-3/5 dark:bg-slate-900 transform -rotate-12 absolute -ml-52"
         />
         <!-- 分割斜块 -->
         <div
@@ -13,15 +13,15 @@
         >
           <div>
             <div class="flex items-center justify-center">
-              <img class="w-24" :src="$GIN_VUE_ADMIN.appLogo" alt />
+              <img class="w-full" :src="$GIN_VUE_ADMIN.appLogo" alt />
             </div>
             <div class="mb-9">
-              <p class="text-center text-4xl font-bold">
+              <p class="text-center text-4xl font-bold text-white">
                 {{ $GIN_VUE_ADMIN.appName }}
               </p>
-              <p class="text-center text-sm font-normal text-gray-500 mt-2.5">
-                A management platform using Golang and Vue
-              </p>
+              <!--              <p class="text-center text-sm font-normal text-gray-500 mt-2.5">-->
+              <!--                A management platform using Golang and Vue-->
+              <!--              </p>-->
             </div>
             <el-form
               ref="loginForm"
@@ -79,46 +79,46 @@
                   >登 录</el-button
                 >
               </el-form-item>
-              <el-form-item class="mb-6">
-                <el-button
-                  class="shadow shadow-active h-11 w-full"
-                  type="primary"
-                  size="large"
-                  @click="checkInit"
-                  >前往初始化</el-button
-                >
-              </el-form-item>
+              <!--              <el-form-item class="mb-6">-->
+              <!--                <el-button-->
+              <!--                  class="shadow shadow-active h-11 w-full"-->
+              <!--                  type="primary"-->
+              <!--                  size="large"-->
+              <!--                  @click="checkInit"-->
+              <!--                  >前往初始化</el-button-->
+              <!--                >-->
+              <!--              </el-form-item>-->
             </el-form>
           </div>
         </div>
       </div>
-      <div class="hidden md:block w-1/2 h-full float-right bg-[#194bfb]">
-        <img
-          class="h-full"
-          src="@/assets/login_right_banner.jpg"
-          alt="banner"
-        />
-      </div>
+      <!--      <div class="hidden md:block w-1/2 h-full float-right " >-->
+      <!--        <img-->
+      <!--          class="h-full"-->
+      <!--          src="@/assets/login_right_banner.jpg"-->
+      <!--          alt="banner"-->
+      <!--        />-->
+      <!--      </div>-->
     </div>
 
     <BottomInfo class="left-0 right-0 absolute bottom-3 mx-auto w-full z-20">
-      <div class="links items-center justify-center gap-2 hidden md:flex">
-        <a href="https://www.gin-vue-admin.com/" target="_blank">
-          <img src="@/assets/docs.png" class="w-8 h-8" alt="文档" />
-        </a>
-        <a href="https://support.qq.com/product/371961" target="_blank">
-          <img src="@/assets/kefu.png" class="w-8 h-8" alt="客服" />
-        </a>
-        <a
-          href="https://github.com/flipped-aurora/gin-vue-admin"
-          target="_blank"
-        >
-          <img src="@/assets/github.png" class="w-8 h-8" alt="github" />
-        </a>
-        <a href="https://space.bilibili.com/322210472" target="_blank">
-          <img src="@/assets/video.png" class="w-8 h-8" alt="视频站" />
-        </a>
-      </div>
+      <!--      <div class="links items-center justify-center gap-2 hidden md:flex">-->
+      <!--        <a href="https://www.gin-vue-admin.com/" target="_blank">-->
+      <!--          <img src="@/assets/docs.png" class="w-8 h-8" alt="文档" />-->
+      <!--        </a>-->
+      <!--        <a href="https://support.qq.com/product/371961" target="_blank">-->
+      <!--          <img src="@/assets/kefu.png" class="w-8 h-8" alt="客服" />-->
+      <!--        </a>-->
+      <!--        <a-->
+      <!--          href="https://github.com/flipped-aurora/gin-vue-admin"-->
+      <!--          target="_blank"-->
+      <!--        >-->
+      <!--          <img src="@/assets/github.png" class="w-8 h-8" alt="github" />-->
+      <!--        </a>-->
+      <!--        <a href="https://space.bilibili.com/322210472" target="_blank">-->
+      <!--          <img src="@/assets/video.png" class="w-8 h-8" alt="视频站" />-->
+      <!--        </a>-->
+      <!--      </div>-->
     </BottomInfo>
   </div>
 </template>
@@ -135,7 +135,6 @@
   defineOptions({
     name: 'Login'
   })
-
   const router = useRouter()
   // 验证函数
   const checkUsername = (rule, value, callback) => {
@@ -236,3 +235,12 @@
     }
   }
 </script>
+
+<style>
+  .bg-login-container {
+    background: url('@/assets/login-bg2.jpg') 100% 100%;
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+</style>

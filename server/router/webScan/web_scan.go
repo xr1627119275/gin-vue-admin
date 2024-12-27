@@ -14,6 +14,7 @@ func (s *WebScanRouter) InitWebScanRouter(Router *gin.RouterGroup, PublicRouter 
 	w_scanRouterWithoutAuth := PublicRouter.Group("w_scan")
 	{
 		w_scanRouter.POST("createWebScan", w_scanApi.CreateWebScan)             // 新建web扫描
+		w_scanRouter.POST("createAFrogWebScan", w_scanApi.CreateAFrogWebScan)   // 新建web扫描
 		w_scanRouter.DELETE("deleteWebScan", w_scanApi.DeleteWebScan)           // 删除web扫描
 		w_scanRouter.DELETE("deleteWebScanByIds", w_scanApi.DeleteWebScanByIds) // 批量删除web扫描
 		w_scanRouter.PUT("updateWebScan", w_scanApi.UpdateWebScan)              // 更新web扫描

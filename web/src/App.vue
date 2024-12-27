@@ -1,17 +1,17 @@
 <template>
-  <div
-    id="app"
-    class="bg-gray-50 text-slate-700 dark:text-slate-500 dark:bg-slate-800"
-  >
+  <div id="app" class="text-slate-700 dark:text-slate-500 dark:bg-slate-800">
     <el-config-provider :locale="zhCn">
       <router-view />
     </el-config-provider>
+    <SystemSelect />
   </div>
 </template>
 
 <script setup>
   import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
   import { useAppStore } from '@/pinia'
+  import SystemSelect from '@/components/systemSelect/systemSelect.vue'
+
   useAppStore()
   defineOptions({
     name: 'App'
@@ -37,5 +37,9 @@
   }
   .gva-container2 {
     height: calc(100% - 4.5rem);
+  }
+
+  #app {
+    //background: url("assets/system1.jpg");
   }
 </style>

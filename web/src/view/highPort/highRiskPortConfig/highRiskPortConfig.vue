@@ -86,14 +86,14 @@
           min-width="240"
         >
           <template #default="scope">
-            <el-button
-              type="primary"
-              link
-              class="table-button"
-              @click="getDetails(scope.row)"
-              ><el-icon style="margin-right: 5px"><InfoFilled /></el-icon
-              >查看</el-button
-            >
+            <!--            <el-button-->
+            <!--              type="primary"-->
+            <!--              link-->
+            <!--              class="table-button"-->
+            <!--              @click="getDetails(scope.row)"-->
+            <!--              ><el-icon style="margin-right: 5px"><InfoFilled /></el-icon-->
+            <!--              >查看</el-button-->
+            <!--            >-->
             <el-button
               type="primary"
               link

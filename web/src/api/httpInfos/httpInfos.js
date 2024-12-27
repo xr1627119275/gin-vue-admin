@@ -95,3 +95,11 @@ export const getHttpInfosList = (params) => {
     params
   })
 }
+
+export const getHttpWeakPassWordInfosList = (params) => {
+  return service({
+    url: '/httpInfo/getHttpWeakPassWordInfosList',
+    method: 'get',
+    params
+  })
+}

@@ -29,7 +29,7 @@ var (
 	GVA_MONGO     *qmgo.QmgoClient
 	GVA_CONFIG    config.Server
 	GVA_VP        *viper.Viper
-	GVA_SYSCONF *viper.Viper
+	GVA_SYSCONF   *viper.Viper
 	// GVA_LOG    *oplogging.Logger
 	GVA_LOG                 *zap.Logger
 	GVA_Timer               timer.Timer = timer.NewTimerTask()
@@ -38,6 +38,7 @@ var (
 	GVA_ACTIVE_DBNAME       *string
 	BlackCache              local_cache.Cache
 	lock                    sync.RWMutex
+	WeekPassList            []string
 )
 
 // GetGlobalDBByDBName 通过名称获取db list中的db

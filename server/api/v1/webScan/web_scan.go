@@ -38,7 +38,23 @@ func (w_scanApi *WebScanApi) CreateWebScan(c *gin.Context) {
 		response.FailWithMessage("创建失败", c)
 		return
 	}
-	response.OkWithData(params.WebScan.GVA_MODEL.ID, c)
+	response.OkWithData(params.WebScan.GVA_MODEL_UUID.ID, c)
+}
+
+func (w_scanApi *WebScanApi) CreateAFrogWebScan(c *gin.Context) {
+	var params webScanReq.RunWebScanParam
+	err := c.ShouldBindJSON(&params)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	err, webscan := webScanService.WebScanServiceApp.RunAFrogScan(params)
+	if err != nil {
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败", c)
+		return
+	}
+	response.OkWithData(webscan, c)
 }
 
 // DeleteWebScan 删除web扫描

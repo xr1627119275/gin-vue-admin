@@ -16,6 +16,14 @@ export const createWebScan = (data) => {
   })
 }
 
+export const createAFrogWebScan = (data) => {
+  return service({
+    url: '/w_scan/createAFrogWebScan',
+    method: 'post',
+    data
+  })
+}
+
 // @Tags WebScan
 // @Summary 删除web扫描
 // @Security ApiKeyAuth

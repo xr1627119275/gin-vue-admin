@@ -21,9 +21,10 @@ func (t Tag) Value() (driver.Value, error) {
 
 // web扫描 结构体  WebScan
 type WebScan struct {
-	global.GVA_MODEL
+	global.GVA_MODEL_UUID
 	HOST       string             `json:"host" form:"host" gorm:"column:host;comment:;"`                 //HOST
 	PORT       string             `json:"port" form:"port" gorm:"column:port;comment:;"`                 //HOST
+	Target     string             `json:"target" form:"target" gorm:"column:target;comment:;"`           //Target
 	Result     string             `json:"result" form:"result" gorm:"column:result;comment:;type:text;"` //扫描结果
 	Args       customType.JsonMap `json:"args" form:"args" gorm:"column:args;comment:;type:text;"`       //参数
 	ScanOver   bool               `json:"scan_over" gorm:"column:scan_over;comment:;default:false;"`     //扫描结束

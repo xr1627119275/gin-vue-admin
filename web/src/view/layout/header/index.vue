@@ -15,7 +15,7 @@
         <img
           alt
           class="h-12 bg-white rounded-full"
-          :src="$GIN_VUE_ADMIN.appLogo"
+          :src="$GIN_VUE_ADMIN.appLogoWhite"
         />
         <div
           v-if="!isMobile"

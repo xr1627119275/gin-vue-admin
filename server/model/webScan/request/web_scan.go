@@ -15,7 +15,8 @@ type WebScanSearch struct {
 }
 
 type RunWebScanParam struct {
-	RunType string `json:"type" `
+	RunType string `json:"type"`
+	Target  string `json:"target"`
 	webScan.WebScan
 }
 

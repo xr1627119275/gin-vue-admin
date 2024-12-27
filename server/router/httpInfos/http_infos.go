@@ -21,6 +21,9 @@ func (s *HttpInfosRouter) InitHttpInfosRouter(Router *gin.RouterGroup, PublicRou
 	{
 		httpInfoRouterWithoutRecord.GET("findHttpInfos", httpInfoApi.FindHttpInfos)       // 根据ID获取httpInfos表
 		httpInfoRouterWithoutRecord.GET("getHttpInfosList", httpInfoApi.GetHttpInfosList) // 获取httpInfos表列表
+
+		httpInfoRouterWithoutRecord.GET("getHttpWeakPassWordInfosList", httpInfoApi.GetHttpWeakPassWordInfosList) // 获取httpInfos表列表
+
 	}
 	{
 		httpInfoRouterWithoutAuth.GET("getHttpInfosPublic", httpInfoApi.GetHttpInfosPublic) // 获取httpInfos表列表
