@@ -11,7 +11,7 @@ export default function useWebsocket({ handleClose = () => {} }) {
     ws.value.onmessage = (event) => {
       let data = event.data
       if (data?.includes(`{{over_end}}`)) {
-        return close()
+        return wsClose()
       }
       cb && cb(data)
     }

@@ -16,7 +16,6 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 )
@@ -53,11 +52,7 @@ func getClientInfo() {
 	}
 }
 func PacketHttpInit(wg *sync.WaitGroup) {
-	if runtime.GOOS == "windows" {
-		device = global.GVA_CONFIG.Scan.Device
-	} else {
-		device = "eth4"
-	}
+	device = global.GVA_CONFIG.Scan.Device
 	getClientInfo()
 	wg.Done()
 	//getClientInfo()

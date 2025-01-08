@@ -282,7 +282,7 @@
       $numOfEls: $index;
       $fullInitAT: $initAT + $initDelayStep * ($numOfEls - 1);
       $elW: calc((100% - $elMrg * ($numOfEls - 1)) / $numOfEls);
-      $elMrgRel: math.percentage($elMrg / $elW);
+      $elMrgRel: math.percentage(math.div($elMrg, $elW));
       width: $elW;
       .el__preview-cont {
         transition: all 0.3s $fullInitAT - 0.2s;

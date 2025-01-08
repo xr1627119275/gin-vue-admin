@@ -166,9 +166,6 @@ func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortSc
 	}
 
 	// Start the command
-	if err := cmd.Start(); err != nil {
-		return err, saveInfo
-	}
 
 	// Create a scanner to read the command's output
 	scanner := bufio.NewScanner(stdout)
@@ -178,6 +175,9 @@ func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortSc
 	saveInfo.Target = params.Target
 	db.Save(&saveInfo)
 	go func() {
+		if err := cmd.Start(); err != nil {
+			return
+		}
 		for scanner.Scan() {
 			saveInfo.Info += scanner.Text() + "\n"
 			utils.HighLogMessage[saveInfo.ID.String()] <- scanner.Text() + "\n"
@@ -195,7 +195,7 @@ func (HRPCService *HighRiskPortConfigService) PortScan(params highPortReq.PortSc
 			return
 		}
 		defer func() {
-			utils.HighLogMessage[saveInfo.ID.String()] <- "{{over}}"
+			utils.HighLogMessage[saveInfo.ID.String()] <- "{{over_end}}"
 			file.Close()
 			os.Remove(outFileName)
 		}()

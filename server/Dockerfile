@@ -1,4 +1,4 @@
-FROM golang:alpine as builder
+FROM dockerpull.org/golang:alpine as builder
 
 WORKDIR /go/src/github.com/flipped-aurora/gin-vue-admin/server
 COPY . .
@@ -10,13 +10,13 @@ RUN go env -w GO111MODULE=on \
     && go mod tidy \
     && go build -o server .
 
-FROM alpine:latest
+FROM dockerpull.org/alpine:latest
 
 LABEL MAINTAINER="SliverHorn@sliver_horn@qq.com"
 # 设置时区
 ENV TZ=Asia/Shanghai
-RUN apk update && apk add --no-cache tzdata openntpd \
-    && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#RUN apk update && apk add --no-cache tzdata openntpd \
+#    && ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /go/src/github.com/flipped-aurora/gin-vue-admin/server
 

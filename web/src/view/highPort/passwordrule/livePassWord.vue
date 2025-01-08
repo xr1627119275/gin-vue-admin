@@ -8,7 +8,7 @@
         tooltip-effect="dark"
         :data="tableData"
         :show-overflow-tooltip="true"
-        row-key="id"
+        row-key="ID"
       >
         <!-- <el-table-column type="selection" width="55"/> -->
 

@@ -295,7 +295,6 @@ const executeTest = async () => {
         console.log(res)
         return clearInterval(timeId.value)
       }
-      // 模拟渗透测试过程
     } catch (error) {
       clearInterval(timeId.value)
     } finally {
