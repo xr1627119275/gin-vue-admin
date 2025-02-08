@@ -17,7 +17,8 @@
           <template #default="{ row: { http_infos: row } }">
             <el-row :gutter="8" class="w-full p-2">
               <el-col :span="12" class="flex flex-col gap-[10px]">
-                <h4>请求Request</h4>
+                <h4>请求Request
+                <ai-gva/></h4>
                 <el-input
                   type="textarea"
                   autosize

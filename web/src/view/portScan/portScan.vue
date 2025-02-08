@@ -79,7 +79,6 @@ const executeTest = () => {
       visible.value = true
       const {connectWebSocket} = useWebsocket({
         handleClose() {
-          debugger
           getScanInfoById(id)
         }
       })

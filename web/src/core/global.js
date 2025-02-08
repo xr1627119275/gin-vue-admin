@@ -4,6 +4,7 @@ import { h } from 'vue'
 // 统一导入el-icon图标
 import * as ElIconModules from '@element-plus/icons-vue'
 import svgIcon from '@/components/svgIcon/svgIcon.vue'
+import aichat from "@/components/aichat/aichat.vue";
 // 导入转换图标名称的函数
 
 const createIconComponent = (name) => ({
@@ -54,6 +55,7 @@ export const register = (app) => {
     app.component(iconName, ElIconModules[iconName])
   }
   app.component('SvgIcon', svgIcon)
+  app.component('AiChat', aichat)
   registerIcons(app)
   app.config.globalProperties.$GIN_VUE_ADMIN = config
 }

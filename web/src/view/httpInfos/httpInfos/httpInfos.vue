@@ -53,7 +53,9 @@
             <div style="padding: 0 20px">
 
               <div>
-                <h4>请求Request</h4>
+
+                <h4>请求Request  <ai-chat /></h4>
+
               <el-input type="textarea" autosize :value="Object.keys(row.headers).map(k => {
                     return `${k}: ${row.headers[k]}`
                   }).join('\n')"></el-input>
@@ -196,7 +198,7 @@
 <!--    </div>-->
 
     <!-- 请求详细信息弹窗 -->
-    <el-dialog :visible.sync="detailsVisible" title="请求详细信息" width="600px">
+    <el-dialog v-model:visible="detailsVisible" title="请求详细信息" width="600px">
       <div v-if="selectedRequest" class="request-details-card">
         <h3>请求信息</h3>
         <p><strong>时间:</strong> {{ selectedRequest.time }}</p>

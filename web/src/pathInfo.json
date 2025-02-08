@@ -44,6 +44,8 @@
   "/src/view/layout/setting/index.vue": "GvaSetting",
   "/src/view/layout/tabs/index.vue": "HistoryComponent",
   "/src/view/login/index.vue": "Login",
+  "/src/view/nucleiInfo/nucleiInfo/nucleiInfo.vue": "Nuclei",
+  "/src/view/nucleiInfo/nucleiInfo/nucleiInfoForm.vue": "NucleiForm",
   "/src/view/person/person.vue": "Person",
   "/src/view/portScan/portScan.vue": "PortScan",
   "/src/view/routerHolder.vue": "RouterHolder",
