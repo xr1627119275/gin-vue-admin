@@ -15,7 +15,14 @@ export const useAppStore = defineStore('app', () => {
     show_watermark: false,
     side_mode: 'normal'
   })
-
+  const systemTypes = ref(
+    [
+      { title: 'AI监测', contentTitle: 'AI监测', type: 'sys_jc' , role_id: '1111' },
+      { title: '自查扫描', contentTitle: '自查扫描', type: 'sys_zc', role_id: '1112' },
+      { title: '溯源反制', contentTitle: '溯源反制', type: 'sys_sy', role_id: '1113' },
+      { title: 'AI网安工作', contentTitle: 'AI网安工作', type: 'sys_aijob', role_id: '1114' }
+    ]
+  )
   const theme = ref('auto')
 
   const toggleTheme = (dark) => {
@@ -124,6 +131,7 @@ export const useAppStore = defineStore('app', () => {
 
   return {
     theme,
+    systemTypes,
     device,
     config,
     toggleTheme,

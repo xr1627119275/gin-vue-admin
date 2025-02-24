@@ -8,5 +8,6 @@ import (
 type NucleiSearch struct {
 	StartCreatedAt *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
 	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	Input          string     `json:"input" form:"input"`
 	request.PageInfo
 }

@@ -13,18 +13,24 @@
     showSelectSystem,
     setSelectSystem
   } from '@/components/systemSelect/useSystemSelect'
+  import { useAppStore, useUserStore } from '@/pinia'
+  import { setUserAuthority } from '@/api/user'
   const sysEl = ref(null)
-  const configs = ref([
-    { title: '两高一弱', contentTitle: '两高一弱' },
-    { title: '溯源系统', contentTitle: '溯源系统' },
-    { title: '反制系统', contentTitle: '反制系统' },
-    { title: '漏扫系统', contentTitle: '漏扫系统' }
-  ])
+  const appStore = useAppStore()
+  const userStore = useUserStore()
+  // const configs = ref([
+  //   { title: '两高一弱', contentTitle: '两高一弱' },
+  //   { title: '溯源系统', contentTitle: '溯源系统' },
+  //   { title: '反制系统', contentTitle: '反制系统' },
+  //   { title: '漏扫系统', contentTitle: '漏扫系统' }
+  // ])
+  const configs = computed(() => appStore.systemTypes)
   const size = computed(() => unref(configs).length)
   const currTimer = ref(null)
   async function initDom() {
     await nextTick()
 
+    console.log("userStore: ", userStore)
     var $cont = sysEl.value
     var $elsArr = [].slice.call(document.querySelectorAll('.el'))
     var $closeBtnsArr = [].slice.call(
@@ -36,12 +42,18 @@
     }, 200)
 
     $elsArr.forEach(function ($el, index) {
-      $el.addEventListener('click', function () {
+      $el.addEventListener('click', async function ()  {
         if (this.classList.contains('s--active')) return
-
+        const authorities = userStore.userInfo?.authorities || []
+        const auth = authorities.find(item => item.authorityName === unref(configs)[index].title)
+        const res = await setUserAuthority({
+          authorityId: auth.authorityId
+        })
+        console.log("authorities: ", res)
         currTimer.value = setTimeout(() => {
+          window.location.reload()
           selectCallback.value($el, index)
-        }, 5000)
+        }, 3000)
 
         $cont.classList.add('s--el-active')
         this.classList.add('s--active')
@@ -61,8 +73,8 @@
     if (showSelectSystem.value) initDom()
   })
   // setTimeout(() => {
-  //
-  // }, 1000)
+  //   showSelectSystem.value = true
+  // }, 2000)
   onMounted(() => {
     if (showSelectSystem.value) initDom()
   })
@@ -324,7 +336,9 @@
 
             &:before {
               transition-delay: 0.1s * $i;
-              background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-#{$i + 3}.jpg');
+              background-image: url('@/assets/select-sys/s-s-#{$i + 1}.jpg');
+              //
+              //background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-#{$i + 3}.jpg');
             }
           }
         }

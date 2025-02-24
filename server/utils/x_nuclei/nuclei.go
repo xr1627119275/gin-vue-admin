@@ -2,6 +2,7 @@ package x_nuclei
 
 import (
 	"context"
+	"fmt"
 	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
 	"github.com/projectdiscovery/nuclei/v3/pkg/templates"
 )
@@ -14,8 +15,13 @@ var nucleiEngine *nuclei.NucleiEngine
 func init() {
 	ctx := context.Background()
 	//ne, err := nuclei.NewNucleiEngineCtx(ctx, nuclei.WithTemplateFilters(nuclei.TemplateFilters{IDs: []string{"CVE-2021-3129"}}))
-	nucleiEngine, _ = nuclei.NewNucleiEngineCtx(ctx, nuclei.WithTemplateFilters(nuclei.TemplateFilters{Severity: "critical"}))
-	err := nucleiEngine.LoadAllTemplates()
+	var err error
+	nucleiEngine, err = nuclei.NewNucleiEngineCtx(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = nucleiEngine.LoadAllTemplates()
 	if err != nil {
 		panic(err)
 		return

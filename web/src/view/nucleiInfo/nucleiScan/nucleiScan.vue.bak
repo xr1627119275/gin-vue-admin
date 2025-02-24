@@ -1,0 +1,31 @@
+<template>
+  <div class="container mx-auto p-4">
+    <ScanConfiguration @start-scan="startScan" />
+    <ScanResults :results="scanResults" :scanning="scanning" />
+  </div>
+</template>
+
+<script setup>
+  import { ref } from 'vue';
+  import ScanConfiguration from './ScanConfiguration.vue';
+  import ScanResults from './ScanResults.vue';
+
+  const scanning = ref(false);
+  const scanResults = ref([]);
+
+  const startScan = (config) => {
+
+    scanning.value = true;
+    scanResults.value = [];
+
+    // Simulate scanning process
+    setTimeout(() => {
+      scanning.value = false;
+      scanResults.value = [
+        { id: 1, severity: 'High', name: 'SQL Injection', target: config.target },
+        { id: 2, severity: 'Medium', name: 'XSS Vulnerability', target: config.target },
+        { id: 3, severity: 'Low', name: 'Information Disclosure', target: config.target },
+      ];
+    }, 3000);
+  };
+</script>

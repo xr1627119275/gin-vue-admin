@@ -4,7 +4,7 @@
       <template #label>
         <span class="custom-tabs-label items-center flex gap-1">
           <el-icon><calendar/></el-icon>
-          <div>资产扫描</div>
+          <div>漏洞扫描</div>
         </span>
       </template>
       <div class="penetration-test-container">

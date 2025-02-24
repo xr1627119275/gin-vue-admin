@@ -28,6 +28,22 @@
         >
           {{ $GIN_VUE_ADMIN.appName }}
         </div>
+
+        <el-dropdown class="ml-2" @command="changeSystem">
+        <span class="el-dropdown-link">
+          切换系统
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
+          <template #dropdown>
+            <el-dropdown-menu >
+              <template v-for="type in appStore.systemTypes">
+                <el-dropdown-item :command="type">{{ type.title }}</el-dropdown-item>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
 
       <el-breadcrumb
@@ -54,7 +70,7 @@
     </div>
 
     <div class="ml-2 flex items-center">
-      <tools />
+<!--      <tools />-->
       <el-dropdown>
         <div class="flex justify-center items-center h-full w-full">
           <span
@@ -76,17 +92,17 @@
                 当前角色：{{ userStore.userInfo.authority.authorityName }}
               </span>
             </el-dropdown-item>
-            <template v-if="userStore.userInfo.authorities">
-              <el-dropdown-item
-                v-for="item in userStore.userInfo.authorities.filter(
-                  (i) => i.authorityId !== userStore.userInfo.authorityId
-                )"
-                :key="item.authorityId"
-                @click="changeUserAuth(item.authorityId)"
-              >
-                <span> 切换为：{{ item.authorityName }} </span>
-              </el-dropdown-item>
-            </template>
+<!--            <template v-if="currRoles">-->
+<!--              <el-dropdown-item-->
+<!--                v-for="item in currRoles.filter(-->
+<!--                  (i) => i.authorityId !== userStore.userInfo.authorityId-->
+<!--                )"-->
+<!--                :key="item.authorityId"-->
+<!--                @click="changeUserAuth(item.authorityId)"-->
+<!--              >-->
+<!--                <span> 切换为：{{ item.authorityName }}</span>-->
+<!--              </el-dropdown-item>-->
+<!--            </template>-->
             <el-dropdown-item icon="avatar" @click="toPerson">
               个人信息
             </el-dropdown-item>
@@ -119,6 +135,12 @@
   const isMobile = computed(() => {
     return device.value === 'mobile'
   })
+  function changeSystem(c) {
+    changeUserAuth(Number(c.role_id))
+  }
+  const currRoles = computed( () => userStore.userInfo?.authorities?.filter(
+    (i) => i.authorityId !== userStore.userInfo.authorityId
+  ))
   const toPerson = () => {
     router.push({ name: 'person' })
   }

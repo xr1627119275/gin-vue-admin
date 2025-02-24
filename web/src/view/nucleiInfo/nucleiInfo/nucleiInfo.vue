@@ -1,23 +1,11 @@
 
 <template>
   <div>
-    <div class="gva-search-box" style="display: none">
+    <div class="gva-search-box" >
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
-      <el-form-item label="创建日期" prop="createdAt">
-      <template #label>
-        <span>
-          创建日期
-          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-            <el-icon><QuestionFilled /></el-icon>
-          </el-tooltip>
-        </span>
-      </template>
-      <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期" :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>
-       —
-      <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
+      <el-form-item label="POC搜索" prop="createdAt">
+        <el-input v-model="searchInfo.input" placeholder="POC搜索"></el-input>
       </el-form-item>
-
-
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
         </template>
@@ -40,15 +28,42 @@
         style="width: 100%"
         tooltip-effect="dark"
         :data="tableData"
-        row-key="ID"
+        row-key="id"
         @selection-change="handleSelectionChange"
         >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55"  :reserve-selection="true"/>
           <el-table-column align="left" label="模板ID" prop="id" />
-          <el-table-column align="left" label="名称" prop="info.name" />
-          <el-table-column align="left" label="描述" prop="info.description" />
-          <el-table-column align="left" label="标签" prop="info.tags" />
-          <el-table-column align="left" label="类型" prop="info.severity" />
+          <el-table-column align="left" label="名称" >
+            <template #default="{ row }">
+              <div v-if="row.info.name" class="line-clamp-2" :title="row.info.name">
+                {{ row.info.name }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="描述" >
+            <template #default="{ row }">
+              <div v-if="row.info.description" class="line-clamp-2" :title="row.info.description">
+                {{ row.info.description }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="标签" >
+            <template #default="{ row }">
+              <div v-if="row.info" class="gap-1 flex flex-wrap">
+                <el-tag v-for="tag in row.info.tags" :key="tag"> {{ tag }}</el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="类型" prop="info.severity" >
+            <template  #default="{ row }">
+              <template v-if="row.info?.severity">
+                <el-tag
+                  effect="dark"
+                  :type="severityType(row.info.severity)"
+                >{{severityTypeStr(row.info.severity)}}</el-tag>
+              </template>
+            </template>
+          </el-table-column>
 <!--        <el-table-column align="left" label="日期" prop="createdAt" width="180">-->
 <!--            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
 <!--        </el-table-column>-->
@@ -221,7 +236,69 @@ setOptions()
 const multipleSelection = ref([])
 // 多选
 const handleSelectionChange = (val) => {
+  console.log(val)
     multipleSelection.value = val
+}
+
+function select (selection, row) {
+  if (selection && selection.find(item => item && (item.id === row.id))) {
+    addRows([row])
+  } else {
+    deleteRows([row])
+  }
+}
+function selectAll (selection) {
+  if (selection.length > 0) {
+    addRows(tableData.value)
+  } else {
+    deleteRows(tableData.value)
+  }
+}
+
+const selectedItems = ref([])
+function addRows (rows) {
+  rows.forEach(row => {
+    if (selectedItems.value.find(item => item.id === row.id)) { return }
+    selectedItems.value.push(row)
+  });
+}
+function deleteRows (rows) {
+  if (selectedItems.value.length === 0) { return }
+  rows.forEach(row => {
+    selectedItems.value = selectedItems.value.filter(item => item.id === row.id)
+  })
+}
+
+
+function severityType(type) {
+  switch (type) {
+    case 'critical':
+      return 'danger'
+    case 'high':
+      return 'warning'
+    case 'info':
+      return 'info'
+    case 'medium':
+      return 'primary'
+    default:
+      return 'info'
+  }
+}
+function severityTypeStr(type) {
+  switch (type) {
+    case 'critical':
+      return '严重'
+    case 'high':
+      return '高危'
+    case 'info':
+      return '信息'
+    case 'medium':
+      return '中危'
+    case 'unknown':
+      return '未知'
+    default:
+      return type
+  }
 }
 
 // 删除行

@@ -8,6 +8,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/x_nuclei"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type NucleiApi struct{}
@@ -166,6 +167,14 @@ func (nucleiApi *NucleiApi) GetNucleiTemplateList(c *gin.Context) {
 	// templates 分页获取
 	var pageInfo nucleiInfoReq.NucleiSearch
 	err := c.ShouldBindQuery(&pageInfo)
+
+	if pageInfo.Input != "" {
+		for _, template := range templates {
+			if strings.Contains("", template.ID) {
+
+			}
+		}
+	}
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
@@ -183,6 +192,7 @@ func (nucleiApi *NucleiApi) GetNucleiTemplateList(c *gin.Context) {
 			i--
 		}
 	}
+
 	response.OkWithDetailed(response.PageResult{
 		List:     templates,
 		Total:    int64(total),
