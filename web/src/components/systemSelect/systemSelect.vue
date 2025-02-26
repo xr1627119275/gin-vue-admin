@@ -24,12 +24,19 @@
   //   { title: '反制系统', contentTitle: '反制系统' },
   //   { title: '漏扫系统', contentTitle: '漏扫系统' }
   // ])
-  const configs = computed(() => appStore.systemTypes)
+  const configs = computed(() => {
+    const authorities = userStore.userInfo?.authorities || []
+    const authTitles = authorities.map(item => item.authorityName)
+    return appStore.systemTypes.filter(item => {
+      return authTitles.includes(item.title)
+    })
+  })
   const size = computed(() => unref(configs).length)
   const currTimer = ref(null)
   async function initDom() {
     await nextTick()
 
+    if (!configs.value.length) return selectCallback.value()
     console.log("userStore: ", userStore)
     var $cont = sysEl.value
     var $elsArr = [].slice.call(document.querySelectorAll('.el'))

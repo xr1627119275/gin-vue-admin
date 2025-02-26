@@ -29,7 +29,7 @@
           {{ $GIN_VUE_ADMIN.appName }}
         </div>
 
-        <el-dropdown class="ml-2" @command="changeSystem">
+        <el-dropdown v-if="hasChangeSystemRoles" class="ml-2" @command="changeSystem">
         <span class="el-dropdown-link">
           切换系统
           <el-icon class="el-icon--right">
@@ -141,6 +141,13 @@
   const currRoles = computed( () => userStore.userInfo?.authorities?.filter(
     (i) => i.authorityId !== userStore.userInfo.authorityId
   ))
+  const hasChangeSystemRoles = computed(() => {
+    const authorities = userStore.userInfo?.authorities || []
+    const authTitles = authorities.map(item => item.authorityName)
+    return !!appStore.systemTypes.filter(item => {
+      return authTitles.includes(item.title)
+    }).length
+  })
   const toPerson = () => {
     router.push({ name: 'person' })
   }
