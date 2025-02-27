@@ -102,10 +102,27 @@ export const getNucleiList = (params) => {
 // @Produce application/json
 // @Param data query request.PageInfo true "模板列表"
 // @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
-// @Router /nuclei/getNucleiTemplateList [get]
-export const getNucleiTemplateList = (params) => {
+// @Router /nuclei/getNucleiTemplateList [post]
+export const getNucleiTemplateList = (data) => {
   return service({
     url: '/nuclei/getNucleiTemplateList',
+    method: 'post',
+    data
+  })
+}
+
+export const createNucleiScan = (data) => {
+  return service({
+    url: '/nuclei/createScan',
+    method: 'post',
+    data
+  })
+}
+
+
+export const getNucleiPocData = (params) => {
+  return service({
+    url: '/nuclei/getNucleiPocData',
     method: 'get',
     params
   })

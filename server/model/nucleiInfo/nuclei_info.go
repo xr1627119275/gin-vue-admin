@@ -15,3 +15,15 @@ type Nuclei struct {
 func (Nuclei) TableName() string {
 	return "nuclei"
 }
+
+// nucleiInfo 结构体  Nuclei
+type NucleiScan struct {
+	Target      *string  `json:"target" form:"target" gorm:"column:target;comment:;"`
+	TemplateIds []string `json:"template_ids" form:"template_ids" gorm:"column:template_ids;comment:;"`
+	global.GVA_MODEL
+}
+
+// TableName nucleiInfo Nuclei自定义表名 nuclei
+func (NucleiScan) TableName() string {
+	return "nucleiScan"
+}

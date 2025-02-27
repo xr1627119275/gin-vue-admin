@@ -1,100 +1,88 @@
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, unref, reactive } from 'vue'
 
-  const target = ref('')
+  const target = ref('http://192.168.220.129:8080')
+  const scanConfig = reactive({
+    checkbox: [ ]
+  })
+  import temp from './temp'
   const scanning = ref(false)
-  const results = ref<any[]>([])
+  const results = ref<any[]>(temp)
   const showPocModal = ref(false)
   const searchQuery = ref('')
   const selectedPocs = ref<string[]>([])
   import nucleiInfo from '../nucleiInfo/nucleiInfo.vue'
-  interface Poc {
-    id: string
-    name: string
-    description: string
-    severity: string
-    category: string
-  }
+  import {ElMessageBox } from  'element-plus'
+  import {
+    createNucleiScan,
+    getNucleiPocData
+  } from '@/api/nucleiInfo/nucleiInfo'
+  import useWebsocket from '@/hooks/use-websocket'
 
 
 
-  const pocs = ref<Poc[]>([
-    {
-      id: 'CVE-2021-1234',
-      name: 'SQL注入漏洞检测',
-      description: '检测常见的SQL注入漏洞',
-      severity: 'HIGH',
-      category: '注入漏洞'
-    },
-    {
-      id: 'CVE-2021-5678',
-      name: 'XSS跨站脚本检测',
-      description: '检测跨站脚本攻击漏洞',
-      severity: 'MEDIUM',
-      category: 'XSS'
-    },
-    {
-      id: 'CVE-2021-9012',
-      name: '目录遍历漏洞检测',
-      description: '检测目录遍历漏洞',
-      severity: 'HIGH',
-      category: '文件系统'
-    },
-    {
-      id: 'CVE-2022-1111',
-      name: '命令注入漏洞检测',
-      description: '检测命令注入漏洞',
-      severity: 'CRITICAL',
-      category: '注入漏洞'
-    }
-  ])
 
-  const filteredPocs = computed(() => {
-    return pocs.value.filter(poc =>
-      poc.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      poc.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      poc.category.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  })
-
-  const togglePoc = (pocId: string) => {
-    const index = selectedPocs.value.indexOf(pocId)
-    if (index === -1) {
-      selectedPocs.value.push(pocId)
-    } else {
-      selectedPocs.value.splice(index, 1)
-    }
-  }
+  const checkDatas = ref([])
 
   const startScan = async () => {
 
     scanning.value = true
     results.value = []
 
-    // 模拟扫描结果
-    setTimeout(() => {
-      results.value = selectedPocs.value.map(pocId => {
-        const poc = pocs.value.find(p => p.id === pocId)
-        const isVulnerable = Math.random() > 0.5 // 随机模拟是否存在漏洞
-        return {
-          id: poc?.id,
-          name: poc?.name,
-          severity: poc?.severity,
-          category: poc?.category,
-          description: isVulnerable ? `发现${poc?.name}漏洞` : `未发现${poc?.name}漏洞`,
-          vulnerable: isVulnerable,
-          location: isVulnerable ? `${target.value}/api/vulnerable-endpoint` : '',
-          details: poc?.description,
-          recommendations: isVulnerable ? [
-            '及时更新相关组件到最新版本',
-            '检查并修复相关代码逻辑',
-            '增加相应的安全防护措施'
-          ] : [],
-          timestamp: new Date().toISOString()
+    const queryData = {
+      targets: unref(target).split('\n').map(item => {
+        return item?.replaceAll('http://', '')?.replaceAll('https://', '')
+      }),
+      poc_filter: {
+        IDs: unref(checkDatas).map(item => item.id),
+        ExcludeSeverities: "info"
+      }
+    }
+
+    if (scanConfig.checkbox.includes('excludeInfo')) {
+      delete queryData.poc_filter.ExcludeSeverities
+    }
+
+
+    let res = await createNucleiScan(queryData)
+    if (res.code === 0) {
+      const id = res.data.id
+      const { connectWebSocket } = useWebsocket({
+        async handleClose() {
+          scanning.value = false
+          console.log("results:", results)
         }
       })
-      scanning.value = false
-    }, 2000)
+
+      connectWebSocket(id, (data) => {
+        data = JSON.parse(JSON.parse(data))
+        results.value.push(data)
+      })
+    }
+    // 模拟扫描结果
+    // setTimeout(() => {
+    //   results.value = selectedPocs.value.map(pocId => {
+    //     const poc = pocs.value.find(p => p.id === pocId)
+    //     const isVulnerable = Math.random() > 0.5 // 随机模拟是否存在漏洞
+    //     return {
+    //       id: poc?.id,
+    //       name: poc?.name,
+    //       severity: poc?.severity,
+    //       category: poc?.category,
+    //       description: isVulnerable ? `发现${poc?.name}漏洞` : `未发现${poc?.name}漏洞`,
+    //       vulnerable: isVulnerable,
+    //       location: isVulnerable ? `${target.value}/api/vulnerable-endpoint` : '',
+    //       details: poc?.description,
+    //       recommendations: isVulnerable ? [
+    //         '及时更新相关组件到最新版本',
+    //         '检查并修复相关代码逻辑',
+    //         '增加相应的安全防护措施'
+    //       ] : [],
+    //       timestamp: new Date().toISOString()
+    //     }
+    //   })
+    //   scanning.value = false
+    // }, 2000)
   }
 
   const getSeverityColor = (severity: string) => {
@@ -141,6 +129,21 @@
       second: '2-digit'
     })
   }
+
+  const dialogData = ref("")
+  const showDataDialog = ref(false)
+  function showDialogData(data) {
+    dialogData.value = data
+    showDataDialog.value = true
+  }
+
+  async function showPocData(id) {
+    const res = await getNucleiPocData(id)
+    if (res.code === 0) {
+      console.log(res.data)
+    }
+  }
+
 </script>
 
 <template>
@@ -160,15 +163,23 @@
             class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
           />
         </div>
-
         <div>
+          <div class="flex gap-2 pb-2 flex-wrap" >
+            <el-tag v-for="(data, index) in checkDatas" :key="data.id" :type="'success'"  closable @close="checkDatas.splice(index, 1)">{{ data.id }}</el-tag>
+          </div>
           <button
             type="button"
             @click="showPocModal = true"
             class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg border border-gray-300"
           >
-            选择 漏洞库 ({{ selectedPocs.length ? `已选择${selectedPocs.length}个` : '默认全选'}})
+            选择 漏洞库 ({{ checkDatas.length ? `已选择${checkDatas.length}个` : '默认全选'}})
           </button>
+        </div>
+        <div v-if="!checkDatas.length">
+          <label for="target" class="block text-sm font-medium mb-2">选项</label>
+          <el-checkbox-group v-model="scanConfig.checkbox">
+            <el-checkbox value="excludeInfo" label="指纹信息识别"></el-checkbox>
+          </el-checkbox-group>
         </div>
 
         <button
@@ -182,22 +193,10 @@
     </div>
 
     <!-- POC 选择弹窗 -->
-    <div v-if="showPocModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-[800px] w-full max-h-[80vh] flex flex-col">
-        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold">选择 POC</h2>
-            <button
-              @click="showPocModal = false"
-              class="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        <div class="overflow-y-auto flex-1 p-4">
-          <nuclei-info type="select"/>
+    <el-dialog v-model="showPocModal" title="选择 POC" width="90vw">
+      <div class="bg-white dark:bg-gray-800    w-full  flex flex-col">
+        <div class="overflow-y-auto flex-1 ">
+          <nuclei-info type="select" v-model:multiple-selection="checkDatas"/>
         </div>
 
         <div class="p-4 border-t border-gray-200 dark:border-gray-700">
@@ -209,7 +208,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </el-dialog>
 
     <!-- 扫描结果 -->
     <div v-if="results.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow">
@@ -218,7 +217,7 @@
         <div class="space-y-6">
           <div
             v-for="result in results"
-            :key="result.id"
+            :key="result.info.id"
             class="border rounded-lg overflow-hidden"
             :class="result.vulnerable ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'"
           >
@@ -226,43 +225,35 @@
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <div class="flex items-center space-x-2">
-                    <h3 class="font-medium">{{ result.name }}</h3>
-                    <span :class="['text-xs font-medium px-2 py-1 rounded-full', getSeverityBgColor(result.severity), getSeverityColor(result.severity)]">
-                      {{ getSeverityText(result.severity) }}
+                    <h3 class="font-medium">{{ result.info.name }}</h3>
+                    <span  :class="['text-xs font-medium px-2 py-1 rounded-full flex-shrink-0', getSeverityBgColor(result.info.severity.toUpperCase()), getSeverityColor(result.info.severity.toUpperCase())]">
+                      {{ getSeverityText(result.info.severity.toUpperCase()) }}
                     </span>
-                    <span class="text-xs text-gray-500">{{ result.category }}</span>
+                    <span class="text-xs text-gray-500">{{ result.url }}</span>
                   </div>
-                  <p class="text-sm text-gray-600 mt-1">{{ result.id }}</p>
+                  <p class="text-sm text-gray-600 mt-1">{{ result['template-id'] }}</p>
                 </div>
                 <span class="text-sm text-gray-500">{{ formatDate(result.timestamp) }}</span>
               </div>
-
               <div class="mt-4">
-                <p :class="result.vulnerable ? 'text-red-600' : 'text-green-600'" class="font-medium">
-                  {{ result.description }}
-                </p>
+<!--                result.vulnerable ? 'text-red-600' : 'text-green-600'-->
+<!--                <p class="font-medium">-->
+<!--                  {{ result.info.description }}-->
+<!--                </p>-->
 
-                <template v-if="result.vulnerable">
-                  <p class="mt-2 text-sm text-gray-600">
-                    <strong>漏洞位置:</strong> {{ result.location }}
+                <template v-if="result">
+                  <p class=" text-sm text-gray-600">
+                    <strong>漏洞位置:</strong> {{ result['matched-at'] }}
                   </p>
-                  <p class="mt-2 text-sm text-gray-600">
-                    <strong>漏洞详情:</strong> {{ result.details }}
+                  <p v-if="!result['extracted-results']?.length" class="mt-2 text-sm text-gray-600">
+                    <strong>漏洞详情:</strong> <pre>{{ result['extracted-results']?.split('\n') }}</pre>
                   </p>
-
-                  <div class="mt-4">
-                    <h4 class="font-medium text-gray-700 mb-2">修复建议:</h4>
-                    <ul class="list-disc list-inside space-y-1">
-                      <li
-                        v-for="(recommendation, index) in result.recommendations"
-                        :key="index"
-                        class="text-sm text-gray-600"
-                      >
-                        {{ recommendation }}
-                      </li>
-                    </ul>
-                  </div>
                 </template>
+              </div>
+              <div class="mt-4 flex justify-between gap-2">
+                <el-button type="info" size="small" @click="showPocData(result['template-id'])">查看poc</el-button>
+
+<!--                <el-button v-if="result['curl-command']" type="info" size="small"  @click="showDialogData(result['curl-command'])">查看CURL</el-button>-->
               </div>
             </div>
           </div>
@@ -274,6 +265,9 @@
       <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
       <p class="mt-4 text-gray-600">正在扫描目标漏洞...</p>
     </div>
+    <el-dialog :footer-class="'display-none none'" v-model="showDataDialog">
+      <div>{{ dialogData }}</div>
+    </el-dialog>
   </div>
 </template>
 

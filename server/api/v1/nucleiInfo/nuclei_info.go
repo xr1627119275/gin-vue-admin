@@ -7,6 +7,7 @@ import (
 	nucleiInfoReq "github.com/flipped-aurora/gin-vue-admin/server/model/nucleiInfo/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/x_nuclei"
 	"github.com/gin-gonic/gin"
+	"github.com/projectdiscovery/nuclei/v3/pkg/templates"
 	"go.uber.org/zap"
 	"strings"
 )
@@ -160,21 +161,24 @@ func (nucleiApi *NucleiApi) GetNucleiList(c *gin.Context) {
 // @Produce application/json
 // @Param data query nucleiInfoReq.NucleiSearch true "分页获取nucleiInfo列表"
 // @Success 200 {object} response.Response{data=response.PageResult,msg=string} "获取成功"
-// @Router /nuclei/getNucleiTemplateList [get]
+// @Router /nuclei/getNucleiTemplateList [post]
 func (nucleiApi *NucleiApi) GetNucleiTemplateList(c *gin.Context) {
-	templates := x_nuclei.GetNucleiTemplates()
-	total := len(templates)
-	// templates 分页获取
+
 	var pageInfo nucleiInfoReq.NucleiSearch
-	err := c.ShouldBindQuery(&pageInfo)
+	err := c.BindJSON(&pageInfo)
+
+	datas := x_nuclei.GetNucleiTemplates(pageInfo.TemplateFilters)
 
 	if pageInfo.Input != "" {
-		for _, template := range templates {
-			if strings.Contains("", template.ID) {
-
+		temp := make([]*templates.Template, 0)
+		for _, template := range datas {
+			if strings.Contains(template.ID+template.Info.Name+template.Info.Description, pageInfo.Input) {
+				temp = append(temp, template)
 			}
 		}
+		datas = temp
 	}
+	total := len(datas)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
@@ -184,17 +188,22 @@ func (nucleiApi *NucleiApi) GetNucleiTemplateList(c *gin.Context) {
 	if pageInfo.PageSize == 0 {
 		pageInfo.PageSize = 10
 	}
-	templates = templates[pageInfo.Page*pageInfo.PageSize : (pageInfo.Page+1)*pageInfo.PageSize]
+
+	var nextIndex = (pageInfo.Page + 1) * pageInfo.PageSize
+	if nextIndex > total {
+		nextIndex = total
+	}
+	datas = datas[pageInfo.Page*pageInfo.PageSize : nextIndex]
 	// 清理空的
-	for i := 0; i < len(templates); i++ {
-		if templates[i] == nil {
-			templates = append(templates[:i], templates[i+1:]...)
+	for i := 0; i < len(datas); i++ {
+		if datas[i] == nil {
+			datas = append(datas[:i], datas[i+1:]...)
 			i--
 		}
 	}
 
 	response.OkWithDetailed(response.PageResult{
-		List:     templates,
+		List:     datas,
 		Total:    int64(total),
 		Page:     Page,
 		PageSize: pageInfo.PageSize,
@@ -215,5 +224,50 @@ func (nucleiApi *NucleiApi) GetNucleiPublic(c *gin.Context) {
 	nucleiService.GetNucleiPublic()
 	response.OkWithDetailed(gin.H{
 		"info": "不需要鉴权的nucleiInfo接口信息",
+	}, "获取成功", c)
+}
+
+// CreateScan 创建扫描
+// @Tags Nuclei
+// @Summary 创建扫描
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body nucleiInfo.NucleiScan true "创建扫描"
+// @Success 200 {object} response.Response{msg=string} "创建成功"
+// @Router /nuclei/createScan [post]
+func (nucleiApi *NucleiApi) CreateScan(c *gin.Context) {
+	var nucleiScanQuery nucleiInfoReq.NucleiScanQuery
+	err := c.ShouldBindJSON(&nucleiScanQuery)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	logId, err := nucleiService.CreateNucleiScan(&nucleiScanQuery)
+	if err != nil {
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败:"+err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(gin.H{
+		"id": logId,
+	}, "创建成功", c)
+}
+
+// GetNucleiPocData 获取pocData
+// @Tags Nuclei
+// @Summary 获取pocData
+// @accept application/json
+// @Produce application/json
+// @Param data query nucleiInfoReq.NucleiSearch true "获取pocData"
+// @Success 200 {object} response.Response{data=object,msg=string} "获取成功"
+// @Router /nuclei/getNucleiPocData [get]
+func (nucleiApi *NucleiApi) GetNucleiPocData(c *gin.Context) {
+	// 此接口不需要鉴权
+	// 示例为返回了一个固定的消息接口，一般本接口用于C端服务，需要自己实现业务逻辑
+	id := c.Query("id")
+	data, _ := nucleiService.GetNucleiPocData(id)
+	response.OkWithDetailed(gin.H{
+		"data": string(data),
 	}, "获取成功", c)
 }

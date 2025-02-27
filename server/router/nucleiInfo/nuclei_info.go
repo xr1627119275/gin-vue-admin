@@ -17,13 +17,16 @@ func (s *NucleiRouter) InitNucleiRouter(Router *gin.RouterGroup, PublicRouter *g
 		nucleiRouter.DELETE("deleteNuclei", nucleiApi.DeleteNuclei)           // 删除nucleiInfo
 		nucleiRouter.DELETE("deleteNucleiByIds", nucleiApi.DeleteNucleiByIds) // 批量删除nucleiInfo
 		nucleiRouter.PUT("updateNuclei", nucleiApi.UpdateNuclei)              // 更新nucleiInfo
+
+		nucleiRouter.POST("createScan", nucleiApi.CreateScan) // 新建nucleiInfo
 	}
 	{
-		nucleiRouterWithoutRecord.GET("findNuclei", nucleiApi.FindNuclei)                       // 根据ID获取nucleiInfo
-		nucleiRouterWithoutRecord.GET("getNucleiList", nucleiApi.GetNucleiList)                 // 获取nucleiInfo列表
-		nucleiRouterWithoutRecord.GET("getNucleiTemplateList", nucleiApi.GetNucleiTemplateList) // 获取nucleiInfo列表
+		nucleiRouterWithoutRecord.GET("findNuclei", nucleiApi.FindNuclei)                        // 根据ID获取nucleiInfo
+		nucleiRouterWithoutRecord.GET("getNucleiList", nucleiApi.GetNucleiList)                  // 获取nucleiInfo列表
+		nucleiRouterWithoutRecord.POST("getNucleiTemplateList", nucleiApi.GetNucleiTemplateList) // 获取nucleiInfo列表
 	}
 	{
-		nucleiRouterWithoutAuth.GET("getNucleiPublic", nucleiApi.GetNucleiPublic) // nucleiInfo开放接口
+		nucleiRouterWithoutAuth.GET("getNucleiPublic", nucleiApi.GetNucleiPublic)   // nucleiInfo开放接口
+		nucleiRouterWithoutAuth.GET("getNucleiPocData", nucleiApi.GetNucleiPocData) // nucleiInfo开放接口
 	}
 }

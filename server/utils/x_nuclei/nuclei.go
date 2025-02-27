@@ -2,6 +2,8 @@ package x_nuclei
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
 	"github.com/projectdiscovery/nuclei/v3/pkg/templates"
@@ -28,9 +30,32 @@ func init() {
 	}
 }
 
-func GetNucleiTemplates() []*templates.Template {
+func GetNucleiAllTemplates() (templates []*templates.Template) {
 	return nucleiEngine.Store().Templates()
 }
+
+var cacheTemplates = make(map[string][]*templates.Template)
+
+func GetNucleiTemplates(TemplateFilters nuclei.TemplateFilters) (templates []*templates.Template) {
+	// TemplateFilters 缓存 templates
+	marshal, err := json.Marshal(TemplateFilters)
+	if err != nil {
+		return nil
+	}
+	m := md5.New()
+	m.Write(marshal)
+	md5data := string(m.Sum(nil))
+	if cacheTemplates[md5data] != nil {
+		return cacheTemplates[md5data]
+	}
+	ne, _ := nuclei.NewNucleiEngineCtx(context.TODO(), //nuclei.WithTemplateFilters(nuclei.TemplateFilters{Tags: []string{"php", "cve2024", "iconv"}}),
+		nuclei.WithTemplateFilters(TemplateFilters),
+	)
+	templates = ne.GetTemplates()
+	cacheTemplates[md5data] = templates
+	return
+}
+
 func main() {
 
 	//ne.ParseTemplate("")

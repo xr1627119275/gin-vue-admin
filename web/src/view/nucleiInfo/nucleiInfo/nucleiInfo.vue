@@ -4,8 +4,26 @@
     <div class="gva-search-box" >
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
       <el-form-item label="POC搜索" prop="createdAt">
-        <el-input v-model="searchInfo.input" placeholder="POC搜索"></el-input>
+        <el-input v-model="searchInfo.input" placeholder="ID/名称/描述"></el-input>
       </el-form-item>
+      <el-form-item label="类型" >
+        <el-select
+          v-model="searchInfo.poc_filter.Severity"
+          placeholder="类型"
+          style="width: 100px"
+          :clearable="true"
+        >
+          <el-option
+            v-for="(item, key) in Object.keys(severityType)"
+            :key="key"
+            :label="severityType[item]"
+            :value="item"
+          />
+        </el-select>
+      </el-form-item>
+        <el-form-item label="标签" >
+          <el-input-tag v-model="searchInfo.poc_filter.Tags" placeholder="标签搜索"></el-input-tag>
+        </el-form-item>
         <template v-if="showAllQuery">
           <!-- 将需要控制显示状态的查询条件添加到此范围内 -->
         </template>
@@ -13,8 +31,8 @@
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
-          <el-button link type="primary" icon="arrow-down" @click="showAllQuery=true" v-if="!showAllQuery">展开</el-button>
-          <el-button link type="primary" icon="arrow-up" @click="showAllQuery=false" v-else>收起</el-button>
+<!--          <el-button link type="primary" icon="arrow-down" @click="showAllQuery=true" v-if="!showAllQuery">展开</el-button>-->
+<!--          <el-button link type="primary" icon="arrow-up" @click="showAllQuery=false" v-else>收起</el-button>-->
         </el-form-item>
       </el-form>
     </div>
@@ -29,6 +47,7 @@
         tooltip-effect="dark"
         :data="tableData"
         row-key="id"
+        v-loading="tableLoading"
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55"  :reserve-selection="true"/>
@@ -59,7 +78,7 @@
               <template v-if="row.info?.severity">
                 <el-tag
                   effect="dark"
-                  :type="severityType(row.info.severity)"
+                  :type="severityLevel(row.info.severity)"
                 >{{severityTypeStr(row.info.severity)}}</el-tag>
               </template>
             </template>
@@ -125,13 +144,15 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-
+import { severityType } from '@/utils/poc'
 
 
 
 defineOptions({
     name: 'Nuclei'
 })
+const multipleSelection = defineModel('multipleSelection')
+
 
 // 提交按钮loading
 const btnLoading = ref(false)
@@ -173,7 +194,12 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
-const searchInfo = ref({})
+const tableLoading = ref(false)
+const searchInfo = ref({
+  poc_filter: {
+    Severity: "critical"
+  }
+})
 
 // 重置
 const onReset = () => {
@@ -211,6 +237,7 @@ const getTableData = async() => {
   //   page.value = table.data.page
   //   pageSize.value = table.data.pageSize
   // }
+  tableLoading.value = true
   const table = await getNucleiTemplateList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value})
   if (table.code === 0) {
     tableData.value = table.data.list
@@ -218,6 +245,7 @@ const getTableData = async() => {
     page.value = table.data.page
     pageSize.value = table.data.pageSize
   }
+  tableLoading.value = false
 }
 
 getTableData()
@@ -233,11 +261,10 @@ setOptions()
 
 
 // 多选数据
-const multipleSelection = ref([])
 // 多选
 const handleSelectionChange = (val) => {
   console.log(val)
-    multipleSelection.value = val
+  multipleSelection.value = val
 }
 
 function select (selection, row) {
@@ -270,7 +297,8 @@ function deleteRows (rows) {
 }
 
 
-function severityType(type) {
+
+function severityLevel(type) {
   switch (type) {
     case 'critical':
       return 'danger'
