@@ -4,7 +4,7 @@
 const greenText = (text) => `\x1b[32m${text}\x1b[0m`
 
 const config = {
-  appName: '便携式漏扫',
+  appName: '自动化渗透平台',
   appLogo: 'logo.png',
   appLogoWhite: 'inlogo.png',
   showViteLogo: true,

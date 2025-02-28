@@ -37,6 +37,7 @@
       </el-form>
     </div>
     <div class="gva-table-box">
+      <poc-viewer v-model:code="pocData" v-model:visible="showPocDialog" ></poc-viewer>
 <!--        <div class="gva-btn-list">-->
 <!--            <el-button  type="primary" icon="plus" @click="openDialog">新增</el-button>-->
 <!--            <el-button  icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="onDelete">删除</el-button>-->
@@ -87,13 +88,13 @@
 <!--            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
 <!--        </el-table-column>-->
         
-<!--        <el-table-column align="left" label="操作" fixed="right" min-width="240">-->
-<!--            <template #default="scope">-->
-<!--            <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>-->
+        <el-table-column align="left" label="操作" fixed="right" width="120">
+            <template #default="scope">
+            <el-button  type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看Poc</el-button>
 <!--            <el-button  type="primary" link icon="edit" class="table-button" @click="updateNucleiFunc(scope.row)">编辑</el-button>-->
 <!--            <el-button  type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>-->
-<!--            </template>-->
-<!--        </el-table-column>-->
+            </template>
+        </el-table-column>
         </el-table>
         <div class="gva-pagination">
             <el-pagination
@@ -131,27 +132,34 @@
 </template>
 
 <script setup>
-import {
-  createNuclei,
-  deleteNuclei,
-  deleteNucleiByIds,
-  updateNuclei,
-  findNuclei,
-  getNucleiList, getNucleiTemplateList
-} from '@/api/nucleiInfo/nucleiInfo'
+  import {
+    createNuclei,
+    deleteNuclei,
+    deleteNucleiByIds,
+    updateNuclei,
+    findNuclei,
+    getNucleiList, getNucleiTemplateList, getNucleiPocData
+  } from '@/api/nucleiInfo/nucleiInfo'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { severityType } from '@/utils/poc'
+import PocViewer from '@/view/nucleiInfo/pocViewer.vue'
 
 
 
 defineOptions({
     name: 'Nuclei'
 })
+
+
 const multipleSelection = defineModel('multipleSelection')
+
+
+const pocData = ref("")
+const showPocDialog = ref(false)
 
 
 // 提交按钮loading
@@ -197,7 +205,7 @@ const tableData = ref([])
 const tableLoading = ref(false)
 const searchInfo = ref({
   poc_filter: {
-    Severity: "critical"
+    Severity: ""
   }
 })
 
@@ -461,11 +469,12 @@ const openDetailShow = () => {
 
 // 打开详情
 const getDetails = async (row) => {
+  const res = await getNucleiPocData({id:row.id})
   // 打开弹窗
-  const res = await findNuclei({ ID: row.ID })
+  // const res = await findNuclei({ ID: row.ID })
   if (res.code === 0) {
-    detailFrom.value = res.data
-    openDetailShow()
+    pocData.value = res.data.data
+    showPocDialog.value = true
   }
 }
 

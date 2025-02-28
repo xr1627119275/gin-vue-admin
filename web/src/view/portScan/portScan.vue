@@ -105,7 +105,7 @@ const executeTest = () => {
       <el-card class="box-card">
         <template #header>
           <div class="card-header">
-            <h2>新建扫描任务</h2>
+            <h2>资产扫描</h2>
           </div>
         </template>
         <el-form :model="formData" label-width="auto">

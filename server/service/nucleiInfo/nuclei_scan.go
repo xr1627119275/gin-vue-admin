@@ -11,7 +11,9 @@ import (
 	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
 	"github.com/projectdiscovery/nuclei/v3/pkg/output"
 	"go.uber.org/zap"
+	"io"
 	"log"
+	"os"
 )
 
 // CreateNucleiScan 创建扫描记录
@@ -50,7 +52,22 @@ func (nucleiService *NucleiService) GetNucleiPocData(id string) ([]byte, error) 
 
 	for _, item := range pocs {
 		if item.ID == id {
-			return item.MarshalYAML()
+			path := item.Path
+			//out = make(chan string)
+			//go func() {
+			f, err := os.Open(path)
+			if err != nil {
+				return nil, err
+			}
+			defer f.Close()
+
+			return io.ReadAll(f)
+			//	scanner := bufio.NewScanner(f)
+			//	for scanner.Scan() {
+			//		out <- scanner.Text()
+			//	}
+			//}()
+			//return <-out, nil
 		}
 	}
 	return nil, nil

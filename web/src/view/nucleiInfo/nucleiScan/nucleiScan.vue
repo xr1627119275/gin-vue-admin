@@ -1,13 +1,16 @@
 <script setup lang="ts">
-  import { ref, computed, unref, reactive } from 'vue'
+  import { ref, computed, unref, reactive, nextTick } from 'vue'
 
-  const target = ref('http://192.168.220.129:8080')
+  const route = useRoute()
+  console.log(route)
+  const target = ref(route.query.target )
   const scanConfig = reactive({
     checkbox: [ ]
   })
-  import temp from './temp'
+
+  // import temp from './temp'
   const scanning = ref(false)
-  const results = ref<any[]>(temp)
+  const results = ref([])
   const showPocModal = ref(false)
   const searchQuery = ref('')
   const selectedPocs = ref<string[]>([])
@@ -18,6 +21,8 @@
     getNucleiPocData
   } from '@/api/nucleiInfo/nucleiInfo'
   import useWebsocket from '@/hooks/use-websocket'
+  import { useRoute } from 'vue-router'
+  import PocViewer from '@/view/nucleiInfo/pocViewer.vue'
 
 
 
@@ -132,15 +137,15 @@
 
   const dialogData = ref("")
   const showDataDialog = ref(false)
-  function showDialogData(data) {
+  function showPoc(data) {
     dialogData.value = data
     showDataDialog.value = true
   }
-
   async function showPocData(id) {
-    const res = await getNucleiPocData(id)
+    const res = await getNucleiPocData({id})
     if (res.code === 0) {
-      console.log(res.data)
+      console.log(res.data.data)
+      showPoc(res.data.data)
     }
   }
 
@@ -231,7 +236,7 @@
                     </span>
                     <span class="text-xs text-gray-500">{{ result.url }}</span>
                   </div>
-                  <p class="text-sm text-gray-600 mt-1">{{ result['template-id'] }}</p>
+                  <p class="text-sm text-gray-600 mt-1"><strong>ID:</strong> {{ result['template-id'] }}</p>
                 </div>
                 <span class="text-sm text-gray-500">{{ formatDate(result.timestamp) }}</span>
               </div>
@@ -245,14 +250,13 @@
                   <p class=" text-sm text-gray-600">
                     <strong>漏洞位置:</strong> {{ result['matched-at'] }}
                   </p>
-                  <p v-if="!result['extracted-results']?.length" class="mt-2 text-sm text-gray-600">
-                    <strong>漏洞详情:</strong> <pre>{{ result['extracted-results']?.split('\n') }}</pre>
+                  <p v-if="result['extracted-results']?.length" class="mt-2 text-sm text-gray-600">
+                    <strong>漏洞详情:</strong> <pre>{{ result['extracted-results'] }}</pre>
                   </p>
                 </template>
               </div>
               <div class="mt-4 flex justify-between gap-2">
                 <el-button type="info" size="small" @click="showPocData(result['template-id'])">查看poc</el-button>
-
 <!--                <el-button v-if="result['curl-command']" type="info" size="small"  @click="showDialogData(result['curl-command'])">查看CURL</el-button>-->
               </div>
             </div>
@@ -265,12 +269,7 @@
       <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
       <p class="mt-4 text-gray-600">正在扫描目标漏洞...</p>
     </div>
-    <el-dialog :footer-class="'display-none none'" v-model="showDataDialog">
-      <div>{{ dialogData }}</div>
-    </el-dialog>
+    <poc-viewer v-model:code="dialogData" v-model:visible="showDataDialog"></poc-viewer>
   </div>
 </template>
 
-<style scoped>
-  /* Add any additional component-specific styles here */
-</style>

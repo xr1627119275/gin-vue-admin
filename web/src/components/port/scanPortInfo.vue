@@ -1,27 +1,30 @@
 <script setup>
   import { createAFrogWebScan, findWebScan } from '@/api/webScan/webScan'
   import useWebsocket from '@/hooks/use-websocket'
+  import { useRouter } from 'vue-router'
   defineProps({
     data: {
       type: Array,
       default: () => []
     }
   })
+  const router = useRouter()
   async function handleClick(row) {
-    let res = await createAFrogWebScan({ target: row.URL })
-    if (res.code === 0) {
-      const id = res.data.id
-      const { connectWebSocket } = useWebsocket({
-        async handleClose() {
-          let res = await findWebScan({ ID: id })
-          console.log(res.data)
-        }
-      })
-
-      connectWebSocket(id, (data) => {
-        console.log(data)
-      })
-    }
+    await router.push({ name: "nucleiScan", query: { target: row.URL } })
+    // let res = await createAFrogWebScan({ target: row.URL })
+    // if (res.code === 0) {
+    //   const id = res.data.id
+    //   const { connectWebSocket } = useWebsocket({
+    //     async handleClose() {
+    //       let res = await findWebScan({ ID: id })
+    //       console.log(res.data)
+    //     }
+    //   })
+    //
+    //   connectWebSocket(id, (data) => {
+    //     console.log(data)
+    //   })
+    // }
   }
 </script>
 
